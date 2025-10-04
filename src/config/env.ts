@@ -1,5 +1,5 @@
-import { config } from "dotenv";
 import path from "path";
+import { config } from "dotenv";
 
 // Load the correct .env file (e.g., .env.development.local)
 config({
@@ -7,7 +7,7 @@ config({
 });
 
 // Define and validate environment variables
-const requiredEnv = ["PORT", "NODE_ENV"] as const;
+const requiredEnv = ["PORT", "NODE_ENV", "DB_URI"] as const;
 
 for (const key of requiredEnv) {
     if (!process.env[key]) {
@@ -18,4 +18,5 @@ for (const key of requiredEnv) {
 export const ENV = {
     PORT: Number(process.env.PORT) || 5000,
     NODE_ENV: process.env.NODE_ENV || "development",
+    DB_URI: process.env.DB_URI,
 } as const;

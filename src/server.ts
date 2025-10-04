@@ -1,17 +1,34 @@
 import http from "http";
 import app from "./app";
-import chalk from "chalk";
-import { ENV } from "./config/env";
+import { ENV } from "@/config/env";
+import connectToDatabase from "@/database/db";
 
+// Create the HTTP server (used for both Express + Socket.IO)
 const server = http.createServer(app);
 
-// Socket.IO will hook into this `server` later
+// Optional: Later you’ll hook in Socket.IO here
 // import { setupSocket } from "./socket";
 // setupSocket(server);
 
-server.listen(ENV.PORT, () => {
-    console.log(chalk.green.bold("======================================"));
-    console.log(chalk.blue.bold("🚀 Server is running!"));
-    console.log(chalk.cyan(`🌐 URL: http://localhost:${ENV.PORT}`));
-    console.log(chalk.green.bold("======================================"));
-});
+/**
+ * Start the server and listen for incoming connections
+ */
+const startServer = async () => {
+    try {
+        // Connect to MongoDB first
+        await connectToDatabase();
+
+        // Start the server only after successful DB connection
+        server.listen(ENV.PORT, () => {
+            console.log(
+                `✅ Server running at: http://localhost:${ENV.PORT} in ${ENV.NODE_ENV} mode`
+            );
+        });
+    } catch (error) {
+        console.error("❌ Failed to start the server:", error);
+        process.exit(1);
+    }
+};
+
+// Run the server
+startServer();
