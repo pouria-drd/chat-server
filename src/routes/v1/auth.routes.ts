@@ -6,7 +6,7 @@ import validateRequest from "@/middlewares/validateRequest.middleware";
 
 const authRouter = Router();
 
-authRouter.post("/register", validateRequest(registerSchema), asyncHandler(register));
 authRouter.post("/login", validateRequest(loginSchema), asyncHandler(login));
+authRouter.post("/register", validateRequest(registerSchema), asyncHandler(register));
 
 export default authRouter;
