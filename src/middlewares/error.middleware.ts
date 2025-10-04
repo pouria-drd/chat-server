@@ -1,46 +1,21 @@
+import AppError from "@/errors/app.error";
 import { Request, Response, NextFunction } from "express";
 
-// Create a custom error type for stronger typing
-interface CustomError extends Error {
-    statusCode?: number;
-    code?: number;
-    errors?: Record<string, { message: string }>;
-}
-
-const errorMiddleware = (err: CustomError, req: Request, res: Response, next: NextFunction) => {
-    console.error("❌ Error Middleware:", err);
-
-    // Use the original error status/message if available
-    const statusCode = err.statusCode || err.code || 500;
-    let message = err.message || "Internal Server Error";
-
-    // Handle specific Mongoose errors
-    if (err.name === "CastError") {
-        return res.status(404).json({
+const errorMiddleware = (err: any, req: Request, res: Response, _next: NextFunction) => {
+    if (err instanceof AppError) {
+        return res.status(err.statusCode).json({
             success: false,
-            message: "Resource not found",
+            error: err.type,
+            message: err.message,
+            details: err.details,
         });
     }
 
-    if (err.code === 11000) {
-        return res.status(400).json({
-            success: false,
-            message: "Duplicate field value entered",
-        });
-    }
-
-    if (err.name === "ValidationError" && err.errors) {
-        const messages = Object.values(err.errors).map((val) => val.message);
-        return res.status(400).json({
-            success: false,
-            message: messages.join(", "),
-        });
-    }
-
-    // Default response
-    res.status(statusCode).json({
+    console.error("Unexpected error:", err);
+    return res.status(500).json({
         success: false,
-        message,
+        error: "InternalError",
+        message: "Something went wrong",
     });
 };
 

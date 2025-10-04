@@ -20,31 +20,36 @@ export interface IUser extends Document {
     createdAt: Date;
     updatedAt: Date;
 
-    comparePassword(candidatePassword: string): Promise<boolean>;
+    updateLastLogin(): void;
     generateAuthToken(): string;
+    comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-const UserSchema: Schema<IUser> = new Schema(
+const UserSchema = new Schema<IUser>(
     {
         username: {
             type: String,
             trim: true,
             unique: true,
+            index: true, // ✅ performance
             lowercase: true,
             required: [true, "Username is required"],
+            set: (v: string) => v.trim().toLowerCase(),
             minlength: [3, "Username must be at least 3 characters"],
             maxlength: [20, "Username cannot exceed 20 characters"],
             match: [
                 /^[a-z][a-z0-9_]{2,19}$/,
-                "Username must start with a letter, contain only lowercase letters, numbers, or underscores, and be between 3 to 20 characters",
+                "Username must start with a letter and contain only lowercase letters, numbers, or underscores",
             ],
         },
         email: {
             type: String,
             trim: true,
             unique: true,
+            index: true, // ✅ performance
             lowercase: true,
             required: [true, "Email is required"],
+            set: (v: string) => v.trim().toLowerCase(),
             minlength: [5, "Email must be at least 5 characters"],
             maxlength: [255, "Email cannot exceed 255 characters"],
             match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Please enter a valid email address"],
@@ -53,7 +58,7 @@ const UserSchema: Schema<IUser> = new Schema(
             type: String,
             trim: true,
             unique: true,
-            required: false,
+            sparse: true, // ✅ allows nulls without unique conflicts
             match: [/^\+?[0-9]{7,15}$/, "Please enter a valid phone number with country code"],
         },
         firstName: {
@@ -70,6 +75,10 @@ const UserSchema: Schema<IUser> = new Schema(
         },
         birthDate: {
             type: Date,
+            validate: {
+                validator: (value: Date) => value <= new Date(),
+                message: "Birth date cannot be in the future",
+            },
         },
         gender: {
             type: String,
@@ -92,6 +101,11 @@ const UserSchema: Schema<IUser> = new Schema(
         },
         avatar: {
             type: String,
+            validate: {
+                validator: (value: string) =>
+                    /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/.test(value),
+                message: "Avatar must be a valid image URL",
+            },
         },
         lastLogin: {
             type: Date,
@@ -102,44 +116,37 @@ const UserSchema: Schema<IUser> = new Schema(
             required: [true, "Password is required"],
             minlength: [8, "Password must be at least 8 characters"],
             validate: {
-                validator: function (value: string) {
-                    // Strong password validation
-                    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
+                validator: (value: string) =>
+                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
                         value
-                    );
-                },
+                    ),
                 message:
-                    "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+                    "Password must include uppercase, lowercase, number, and special character",
             },
         },
     },
     { timestamps: true }
 );
 
-// Hash password before saving
+// Hash password before save
 UserSchema.pre<IUser>("save", async function (next) {
     if (!this.isModified("password")) return next();
-
-    try {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
-        next();
-    } catch (err) {
-        next(err as Error);
-    }
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
 });
 
 // Compare passwords
-UserSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
+UserSchema.methods.comparePassword = function (candidatePassword: string) {
     return bcrypt.compare(candidatePassword, this.password);
 };
 
-// Generate JWT auth token
-UserSchema.methods.generateAuthToken = function (): string {
+// Generate JWT token
+UserSchema.methods.generateAuthToken = function () {
     const payload = {
         id: this._id,
-        username: this.username,
         role: this.role,
+        username: this.username,
     };
 
     return jwt.sign(payload, ENV.JWT_SECRET, {
@@ -147,6 +154,10 @@ UserSchema.methods.generateAuthToken = function (): string {
     });
 };
 
-const User: Model<IUser> = mongoose.model<IUser>("User", UserSchema);
+UserSchema.methods.updateLastLogin = function () {
+    this.lastLogin = new Date();
+};
+
+const User = mongoose.model<IUser>("User", UserSchema);
 
 export default User;

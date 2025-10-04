@@ -1,71 +1,54 @@
+import userDto from "@/dtos/user.dto";
 import User from "@/models/user.model";
+import AppError from "@/errors/app.error";
 import { Request, Response } from "express";
+import ErrorType from "@/errors/types.error";
+import createUser from "@/services/user.service";
 
 export const register = async (req: Request, res: Response) => {
-    try {
-        const { username, email, password, firstName, lastName } = req.body;
+    const { username, email, password, firstName, lastName, gender, birthDate } = req.body;
 
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ success: false, message: "Email already in use" });
-        }
+    const user = await createUser({
+        username: username.trim().toLowerCase(),
+        email: email.trim().toLowerCase(),
+        password,
+        firstName,
+        lastName,
+        gender,
+        birthDate,
+    });
 
-        const user = new User({
-            username,
-            email,
-            password,
-            firstName,
-            lastName,
-        });
+    user.updateLastLogin();
+    const token = user.generateAuthToken();
 
-        await user.save();
-
-        const token = user.generateAuthToken();
-
-        res.status(201).json({
-            success: true,
-            data: {
-                user: {
-                    id: user._id,
-                    username: user.username,
-                    email: user.email,
-                },
-                token,
-            },
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, message: (error as Error).message });
-    }
+    return res.status(201).json({
+        success: true,
+        message: "User registered successfully",
+        data: {
+            token,
+            user: userDto(user),
+        },
+    });
 };
 
 export const login = async (req: Request, res: Response) => {
-    try {
-        const { email, password } = req.body;
+    const { identifier, password } = req.body;
+    // Find user by username OR email
+    const user = await User.findOne({
+        $or: [{ username: identifier }, { email: identifier }],
+    });
 
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json({ success: false, message: "Invalid credentials" });
-        }
+    if (!user) throw new AppError(ErrorType.Unauthorized, "Invalid credentials", 401);
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) throw new AppError(ErrorType.Unauthorized, "Invalid credentials", 401);
 
-        const isMatch = await user.comparePassword(password);
-        if (!isMatch) {
-            return res.status(400).json({ success: false, message: "Invalid credentials" });
-        }
-
-        const token = user.generateAuthToken();
-
-        res.status(200).json({
-            success: true,
-            data: {
-                user: {
-                    id: user._id,
-                    username: user.username,
-                    email: user.email,
-                },
-                token,
-            },
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, message: (error as Error).message });
-    }
+    const token = user.generateAuthToken();
+    return res.json({
+        success: true,
+        message: "Login successful",
+        data: {
+            token,
+            user: userDto(user),
+        },
+    });
 };
