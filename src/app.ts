@@ -5,6 +5,7 @@ import express, { Application, Request, Response } from "express";
 
 import router from "@/routes";
 import errorMiddleware from "@/middlewares/error.middleware";
+import httpLogger from "./middlewares/http-logger.middleware";
 
 const app: Application = express();
 
@@ -16,6 +17,8 @@ app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
+// Use logger middleware
+app.use(httpLogger);
 
 // Routes
 app.use("/api", router);
