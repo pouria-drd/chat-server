@@ -1,9 +1,8 @@
-import userDto from "@/dtos/user.dto";
 import User from "@/models/user.model";
-import AppError from "@/errors/app.error";
+import { userDto } from "@/dtos/user.dto";
 import { Request, Response } from "express";
-import ErrorType from "@/errors/types.error";
-import createUser from "@/services/user.service";
+import { AppError } from "@/errors/app.error";
+import { createUser } from "@/services/user.service";
 
 export const register = async (req: Request, res: Response) => {
     const { username, email, password, firstName, lastName, gender, birthDate } = req.body;
@@ -38,9 +37,9 @@ export const login = async (req: Request, res: Response) => {
         $or: [{ username: identifier }, { email: identifier }],
     });
 
-    if (!user) throw new AppError(ErrorType.Unauthorized, "Invalid credentials", 401);
+    if (!user) throw new AppError("BadRequest", "Invalid credentials");
     const isMatch = await user.comparePassword(password);
-    if (!isMatch) throw new AppError(ErrorType.Unauthorized, "Invalid credentials", 401);
+    if (!isMatch) throw new AppError("BadRequest", "Invalid credentials");
 
     const token = user.generateAuthToken();
     return res.json({

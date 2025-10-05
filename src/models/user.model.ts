@@ -1,30 +1,9 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import mongoose, { Schema } from "mongoose";
+
 import ENV from "@/config/env";
-import mongoose, { Document, Schema } from "mongoose";
-
-export interface IUser extends Document {
-    _id: Schema.Types.ObjectId;
-    username: string;
-    email: string;
-    phone?: string;
-    firstName?: string;
-    lastName?: string;
-    birthDate?: Date;
-    role: "admin" | "user";
-    gender: "male" | "female" | "other";
-    status: "active" | "inactive" | "banned" | "deleted";
-    isVerified: boolean;
-    avatar?: string;
-    password: string;
-    lastLogin?: Date;
-    createdAt: Date;
-    updatedAt: Date;
-
-    updateLastLogin(): void;
-    generateAuthToken(): string;
-    comparePassword(candidatePassword: string): Promise<boolean>;
-}
+import { IUser } from "@/types/user.types";
 
 const UserSchema = new Schema<IUser>(
     {

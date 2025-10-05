@@ -1,6 +1,6 @@
-import { IUser } from "@/models/user.model";
+import { IUser, UserDTO } from "@/types/user.types";
 
-const userDto = (user: IUser) => {
+export const userDto = (user: IUser): UserDTO => {
     return {
         id: user._id,
         email: user.email,
@@ -17,5 +17,3 @@ const userDto = (user: IUser) => {
         lastLogin: user.lastLogin,
     };
 };
-
-export default userDto;

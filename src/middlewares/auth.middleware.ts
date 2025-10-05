@@ -1,6 +1,7 @@
 import ENV from "@/config/env";
 import jwt from "jsonwebtoken";
 import User from "@/models/user.model";
+import { AppError } from "@/errors/app.error";
 import { Request, Response, NextFunction } from "express";
 
 interface JwtPayload {
@@ -17,18 +18,14 @@ const protect = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     if (!token) {
-        return res.status(401).json({ success: false, message: "Not authorized" });
+        throw new AppError("Unauthorized", "Authorization header not found");
     }
 
     try {
         const decoded = jwt.verify(token, ENV.JWT_SECRET) as JwtPayload;
         const user = await User.findById(decoded.id);
         if (!user) {
-            return res.status(401).json({
-                success: false,
-                message: "Unauthorized",
-                error: "Invalid token",
-            });
+            throw new AppError("Unauthorized", "Invalid token");
         }
         req.user = {
             id: decoded.id,
@@ -37,7 +34,7 @@ const protect = async (req: Request, res: Response, next: NextFunction) => {
         };
         next();
     } catch (error) {
-        return res.status(401).json({ success: false, message: "Invalid token" });
+        throw new AppError("Unauthorized", "Invalid token");
     }
 };
 

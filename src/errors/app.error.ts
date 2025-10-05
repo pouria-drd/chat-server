@@ -1,17 +1,31 @@
-import ErrorType from "./types.error";
+import { ErrorStatusMap, ErrorType, IError, IErrorResponse } from "@/types/error.types";
 
-class AppError extends Error {
+export class AppError<T = unknown> extends Error implements IError<T> {
     public readonly type: ErrorType;
     public readonly statusCode: number;
-    public readonly details?: any;
+    public readonly details?: T;
 
-    constructor(type: ErrorType, message: string, statusCode = 400, details?: any) {
+    constructor(type: ErrorType, message: string, details?: T) {
         super(message);
+        this.name = "AppError";
         this.type = type;
-        this.statusCode = statusCode;
+        this.statusCode = ErrorStatusMap[type];
         this.details = details;
         Error.captureStackTrace(this, this.constructor);
     }
+
+    toJSON(): IErrorResponse<T> {
+        return {
+            error: {
+                type: this.type,
+                message: this.message,
+                statusCode: this.statusCode,
+                details: this.details,
+            },
+        };
+    }
 }
 
-export default AppError;
+export function isAppError(error: unknown): error is AppError {
+    return error instanceof AppError;
+}
