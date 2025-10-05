@@ -4,6 +4,7 @@ import ENV from "@/config/env";
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface IUser extends Document {
+    _id: Schema.Types.ObjectId;
     username: string;
     email: string;
     phone?: string;
