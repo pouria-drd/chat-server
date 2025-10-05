@@ -1,10 +1,10 @@
+import ENV from "@/config/env";
 import mongoose from "mongoose";
-import { ENV } from "@/config/env";
 
 /**
  * Connect to MongoDB using Mongoose
  */
-const connectToDatabase = async (): Promise<void> => {
+const connectDB = async (): Promise<void> => {
     try {
         if (!ENV.DB_URI) {
             throw new Error(
@@ -28,4 +28,4 @@ mongoose.connection.on("reconnected", () => {
     console.info("🔄 MongoDB reconnected");
 });
 
-export default connectToDatabase;
+export default connectDB;

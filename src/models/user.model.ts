@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { ENV } from "@/config/env";
-import mongoose, { Document, Model, Schema } from "mongoose";
+import ENV from "@/config/env";
+import mongoose, { Document, Schema } from "mongoose";
 
 export interface IUser extends Document {
     username: string;

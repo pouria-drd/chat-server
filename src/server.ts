@@ -1,7 +1,7 @@
 import http from "http";
 import app from "./app";
-import { ENV } from "@/config/env";
-import connectToDatabase from "@/database/db";
+import ENV from "@/config/env";
+import connectDB from "@/config/db";
 
 // Create the HTTP server (used for both Express + Socket.IO)
 const server = http.createServer(app);
@@ -16,7 +16,7 @@ const server = http.createServer(app);
 const startServer = async () => {
     try {
         // Connect to MongoDB first
-        await connectToDatabase();
+        await connectDB();
 
         // Start the server only after successful DB connection
         server.listen(ENV.PORT, () => {
