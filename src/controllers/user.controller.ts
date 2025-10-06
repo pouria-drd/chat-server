@@ -3,6 +3,7 @@ import { userDto } from "@/dtos/user.dto";
 import { Request, Response } from "express";
 import { AppError } from "@/errors/app.error";
 import { deleteFile } from "@/utils/file.util";
+import cloudinary from "@/config/cloudinary.config";
 
 /**
  * Get authenticated user
@@ -43,6 +44,38 @@ export const uploadUserAvatar = async (req: Request, res: Response) => {
 
     // Save new avatar
     user.avatar = `/uploads/avatars/${req.file.filename}`;
+    await user.save();
+
+    // Return updated user
+    const _userDto = userDto(user);
+
+    return res.json({
+        success: true,
+        message: "Avatar updated successfully",
+        data: { user: _userDto },
+    });
+};
+
+/**
+ * Handles user avatar upload via cloudinary
+ * Updates user record and deletes old avatar if exists
+ */
+export const cloudinaryUpdateUserAvatar = async (req: Request, res: Response) => {
+    // Check if avatar is available
+    const { avatar } = req.body;
+    if (!avatar) throw new AppError("BadRequest", "Avatar is required");
+    // Check if user is authenticated and exists
+    const userId = req.user?.id;
+    const user = await User.findById(userId);
+    if (!user) throw new AppError("NotFound", "User not found");
+
+    const uploadResponse = await cloudinary.uploader.upload(avatar);
+
+    // Delete old avatar
+    await deleteFile(user.avatar);
+
+    // Save new avatar
+    user.avatar = uploadResponse.secure_url;
     await user.save();
 
     // Return updated user
