@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+export const loginSchema = z.object({
+    identifier: z.string().min(3),
+    password: z.string().min(8),
+});
+
 export const registerSchema = z.object({
     username: z
         .string()
@@ -18,9 +23,4 @@ export const registerSchema = z.object({
     lastName: z.string().min(2).max(50).optional(),
     gender: z.enum(["male", "female", "other"]).optional(),
     birthDate: z.date().optional(),
-});
-
-export const loginSchema = z.object({
-    identifier: z.string().min(3),
-    password: z.string().min(8),
 });

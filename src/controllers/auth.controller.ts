@@ -4,9 +4,15 @@ import { Request, Response } from "express";
 import { AppError } from "@/errors/app.error";
 import { createUser } from "@/services/user.service";
 
+/**
+ * Register a new user
+ * @param req - Express request object
+ * @param res - Express response object
+ */
 export const register = async (req: Request, res: Response) => {
+    // Get user data from request body
     const { username, email, password, firstName, lastName, gender, birthDate } = req.body;
-
+    // Create user via service
     const user = await createUser({
         username: username.trim().toLowerCase(),
         email: email.trim().toLowerCase(),
@@ -16,10 +22,10 @@ export const register = async (req: Request, res: Response) => {
         gender,
         birthDate,
     });
-
-    user.updateLastLogin();
+    // Update last login and generate token
+    await user.updateLastLogin();
     const token = user.generateAuthToken();
-
+    // Return user and token
     return res.status(201).json({
         success: true,
         message: "User registered successfully",
@@ -30,18 +36,25 @@ export const register = async (req: Request, res: Response) => {
     });
 };
 
+/**
+ * Login a user via username or email
+ * @param req - Express request object
+ * @param res - Express response object
+ */
 export const login = async (req: Request, res: Response) => {
     const { identifier, password } = req.body;
     // Find user by username OR email
     const user = await User.findOne({
         $or: [{ username: identifier }, { email: identifier }],
     });
-
+    // Check if user exists and password matches
     if (!user) throw new AppError("BadRequest", "Invalid credentials");
     const isMatch = await user.comparePassword(password);
     if (!isMatch) throw new AppError("BadRequest", "Invalid credentials");
-
+    // Update last login and generate token
+    await user.updateLastLogin();
     const token = user.generateAuthToken();
+    // Return user and token
     return res.json({
         success: true,
         message: "Login successful",

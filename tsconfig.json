@@ -12,7 +12,8 @@
         "strict": true,
         "skipLibCheck": true,
         "typeRoots": ["./src/types", "./node_modules/@types"],
-        "types": ["node", "express"]
+        "types": ["node", "express"],
+        "resolveJsonModule": true
     },
     "include": ["src/**/*"],
     "exclude": ["node_modules"]

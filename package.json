@@ -24,6 +24,8 @@
         "mongodb": "^6.20.0",
         "mongoose": "^8.19.0",
         "morgan": "^1.10.1",
+        "multer": "^2.0.2",
+        "serve-favicon": "^2.5.1",
         "winston": "^3.18.3",
         "zod": "^4.1.11"
     },
@@ -33,7 +35,9 @@
         "@types/express": "^5.0.3",
         "@types/jsonwebtoken": "^9.0.10",
         "@types/morgan": "^1.9.10",
+        "@types/multer": "^2.0.0",
         "@types/node": "^24.6.2",
+        "@types/serve-favicon": "^2.5.7",
         "@types/winston": "^2.4.4",
         "cross-env": "^10.1.0",
         "eslint": "^9.37.0",

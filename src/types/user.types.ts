@@ -18,8 +18,8 @@ export interface IUser extends Document {
     createdAt: Date;
     updatedAt: Date;
 
-    updateLastLogin(): void;
     generateAuthToken(): string;
+    updateLastLogin(): Promise<void>;
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
 

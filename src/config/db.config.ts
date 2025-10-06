@@ -1,5 +1,5 @@
-import ENV from "./env";
-import logger from "./logger";
+import ENV from "./env.config";
+import logger from "./logger.config";
 import mongoose from "mongoose";
 
 /**

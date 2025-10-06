@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose, { Schema } from "mongoose";
 
-import ENV from "@/config/env";
+import ENV from "@/config/env.config";
 import { IUser } from "@/types/user.types";
 
 const UserSchema = new Schema<IUser>(
@@ -83,8 +83,10 @@ const UserSchema = new Schema<IUser>(
             type: String,
             validate: {
                 validator: (value: string) =>
-                    /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/.test(value),
-                message: "Avatar must be a valid image URL",
+                    /^(https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$|^\/uploads\/.+\.(jpg|jpeg|png|gif|webp)$)/i.test(
+                        value
+                    ),
+                message: "Avatar must be a valid image URL or local upload path",
             },
         },
         lastLogin: {
@@ -117,12 +119,12 @@ UserSchema.pre<IUser>("save", async function (next) {
 });
 
 // Compare passwords
-UserSchema.methods.comparePassword = function (candidatePassword: string) {
+UserSchema.methods.comparePassword = function (candidatePassword: string): Promise<boolean> {
     return bcrypt.compare(candidatePassword, this.password);
 };
 
 // Generate JWT token
-UserSchema.methods.generateAuthToken = function () {
+UserSchema.methods.generateAuthToken = function (): string {
     const payload = {
         id: this._id,
         role: this.role,
@@ -134,8 +136,10 @@ UserSchema.methods.generateAuthToken = function () {
     });
 };
 
-UserSchema.methods.updateLastLogin = function () {
+// Update last login
+UserSchema.methods.updateLastLogin = async function () {
     this.lastLogin = new Date();
+    await this.save();
 };
 
 const User = mongoose.model<IUser>("User", UserSchema);

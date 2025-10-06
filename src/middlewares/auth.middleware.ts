@@ -1,4 +1,4 @@
-import ENV from "@/config/env";
+import ENV from "@/config/env.config";
 import jwt from "jsonwebtoken";
 import User from "@/models/user.model";
 import { AppError } from "@/errors/app.error";
