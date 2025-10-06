@@ -1,14 +1,8 @@
 import "express";
-import { JwtPayload } from "jsonwebtoken";
-
-interface CustomJwtPayload extends JwtPayload {
-    id: string;
-    role: string;
-    username: string;
-}
+import { RequestUser } from "@/types/user.types";
 
 declare module "express-serve-static-core" {
     interface Request {
-        user?: CustomJwtPayload;
+        user?: RequestUser;
     }
 }

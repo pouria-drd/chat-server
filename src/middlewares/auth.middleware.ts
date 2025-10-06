@@ -1,14 +1,11 @@
-import ENV from "@/config/env.config";
 import jwt from "jsonwebtoken";
-import User from "@/models/user.model";
-import { AppError } from "@/errors/app.error";
 import { Request, Response, NextFunction } from "express";
 
-interface JwtPayload {
-    id: string;
-    role: string;
-    username: string;
-}
+import ENV from "@/config/env.config";
+import User from "@/models/user.model";
+import { userDto } from "@/dtos/user.dto";
+import { AppError } from "@/errors/app.error";
+import { CustomJwtPayload } from "@/types/user.types";
 
 const protect = async (req: Request, res: Response, next: NextFunction) => {
     let token: string | undefined;
@@ -22,16 +19,12 @@ const protect = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     try {
-        const decoded = jwt.verify(token, ENV.JWT_SECRET) as JwtPayload;
-        const user = await User.findById(decoded.id);
+        const decoded = jwt.verify(token, ENV.JWT_SECRET) as CustomJwtPayload;
+        const user = await User.findById(decoded.id).select("-password");
         if (!user) {
             throw new AppError("Unauthorized", "Invalid token");
         }
-        req.user = {
-            id: decoded.id,
-            role: decoded.role,
-            username: decoded.username,
-        };
+        req.user = userDto(user);
         next();
     } catch (error) {
         throw new AppError("Unauthorized", "Invalid token");

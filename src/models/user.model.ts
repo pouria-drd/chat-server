@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import mongoose, { Schema } from "mongoose";
 
 import ENV from "@/config/env.config";
-import { IUser } from "@/types/user.types";
+import { IUser, UserPayload } from "@/types/user.types";
 
 const UserSchema = new Schema<IUser>(
     {
@@ -125,15 +125,17 @@ UserSchema.methods.comparePassword = function (candidatePassword: string): Promi
 
 // Generate JWT token
 UserSchema.methods.generateAuthToken = function (): string {
-    const payload = {
+    const payload: UserPayload = {
         id: this._id,
         role: this.role,
         username: this.username,
     };
 
-    return jwt.sign(payload, ENV.JWT_SECRET, {
+    const token = jwt.sign(payload, ENV.JWT_SECRET, {
         expiresIn: ENV.JWT_EXPIRES_IN || "1d",
     });
+
+    return token;
 };
 
 // Update last login

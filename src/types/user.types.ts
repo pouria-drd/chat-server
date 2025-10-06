@@ -1,3 +1,4 @@
+import { JwtPayload } from "jsonwebtoken";
 import { Document, Schema } from "mongoose";
 
 export interface IUser extends Document {
@@ -38,3 +39,12 @@ export interface UserDTO {
     updatedAt: Date;
     lastLogin?: Date;
 }
+
+export interface UserPayload {
+    id: string;
+    role: string;
+    username: string;
+}
+
+export type RequestUser = JwtPayload & UserDTO;
+export type CustomJwtPayload = JwtPayload & UserPayload;
