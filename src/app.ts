@@ -13,6 +13,7 @@ import cookieParser from "cookie-parser";
 import express, { Application, Request, Response } from "express";
 
 import router from "@/routes";
+import ENV from "./config/env.config";
 import { getAppVersion } from "@/utils/app.utils";
 import errorMiddleware from "@/middlewares/error.middleware";
 import httpLogger from "@/middlewares/http-logger.middleware";
@@ -58,7 +59,7 @@ app.use(cors());
  * Parse JSON request bodies
  * Converts incoming JSON payloads into `req.body`
  */
-app.use(express.json());
+app.use(express.json({ limit: ENV.JSON_LIMIT }));
 
 /**
  * Parse cookies from incoming requests
