@@ -1,5 +1,3 @@
-// src/types/error.types.ts
-
 export const ErrorType = {
     BadRequest: "BadRequest",
     Unauthorized: "Unauthorized",
@@ -7,6 +5,7 @@ export const ErrorType = {
     NotFound: "NotFound",
     Conflict: "Conflict",
     Internal: "Internal",
+    TooManyRequests: "TooManyRequests",
 } as const;
 
 export type ErrorType = (typeof ErrorType)[keyof typeof ErrorType];
@@ -18,6 +17,7 @@ export const ErrorStatusMap: Record<ErrorType, number> = {
     NotFound: 404,
     Conflict: 409,
     Internal: 500,
+    TooManyRequests: 429,
 };
 
 export interface IError<T = unknown> {
