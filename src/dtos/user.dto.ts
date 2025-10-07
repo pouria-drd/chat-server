@@ -1,4 +1,4 @@
-import { IUser, UserDTO } from "@/types/user.types";
+import { IUser, UserDTO } from "@/types/user.type";
 
 export const userDto = (user: IUser): UserDTO => {
     return {

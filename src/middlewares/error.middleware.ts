@@ -1,4 +1,4 @@
-import logger from "@/config/logger.config";
+import logger from "@/configs/logger.config";
 import { isAppError } from "@/errors/app.error";
 import { Request, Response, NextFunction } from "express";
 

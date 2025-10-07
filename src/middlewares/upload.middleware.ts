@@ -1,7 +1,7 @@
 import { MulterError } from "multer";
 import { Request, Response, NextFunction } from "express";
 
-import upload from "@/config/multer.config";
+import upload from "@/configs/multer.config";
 import { AppError } from "@/errors/app.error";
 
 /**

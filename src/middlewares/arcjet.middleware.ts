@@ -1,4 +1,4 @@
-import aj from "@/config/arcjet.config";
+import aj from "@/configs/arcjet.config";
 // import logger from "@/config/logger.config";
 import { AppError } from "@/errors/app.error";
 import { isSpoofedBot } from "@arcjet/inspect";

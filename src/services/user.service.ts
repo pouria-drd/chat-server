@@ -1,5 +1,5 @@
 import User from "@/models/user.model";
-import { IUser } from "@/types/user.types";
+import { IUser } from "@/types/user.type";
 import { AppError } from "@/errors/app.error";
 
 interface CreateUserData {

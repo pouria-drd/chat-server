@@ -1,6 +1,6 @@
 import path from "path";
 import fs from "fs/promises";
-import logger from "@/config/logger.config";
+import logger from "@/configs/logger.config";
 
 /**
  * Safely deletes a file from the local filesystem.

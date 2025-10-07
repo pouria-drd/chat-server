@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 
-import ENV from "@/config/env.config";
+import ENV from "@/configs/env.config";
 import User from "@/models/user.model";
 import { userDto } from "@/dtos/user.dto";
 import { AppError } from "@/errors/app.error";
-import { CustomJwtPayload } from "@/types/user.types";
+import { CustomJwtPayload } from "@/types/user.type";
 
 const protect = async (req: Request, res: Response, next: NextFunction) => {
     let token: string | undefined;

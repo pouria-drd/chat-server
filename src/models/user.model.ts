@@ -2,8 +2,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose, { Schema } from "mongoose";
 
-import ENV from "@/config/env.config";
-import { IUser, UserPayload } from "@/types/user.types";
+import ENV from "@/configs/env.config";
+import { IUser, UserPayload } from "@/types/user.type";
 
 const UserSchema = new Schema<IUser>(
     {

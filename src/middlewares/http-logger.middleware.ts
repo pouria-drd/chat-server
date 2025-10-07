@@ -1,4 +1,4 @@
-import logger from "@/config/logger.config";
+import logger from "@/configs/logger.config";
 import morgan, { StreamOptions } from "morgan";
 
 // Custom stream for Morgan to use Winston instead of console

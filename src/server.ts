@@ -1,8 +1,8 @@
 import http from "http";
 import app from "./app";
-import ENV from "@/config/env.config";
-import connectDB from "@/config/db.config";
-import logger from "@/config/logger.config";
+import ENV from "@/configs/env.config";
+import connectDB from "@/configs/db.config";
+import logger from "@/configs/logger.config";
 
 // Create the HTTP server (used for both Express + Socket.IO)
 const server = http.createServer(app);
