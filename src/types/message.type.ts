@@ -1,51 +1,77 @@
-import mongoose, { Document, Schema } from "mongoose";
+import { Schema } from "mongoose";
 
-/**
- * 🔹 IMessage — TypeScript interface for chat messages
- */
-export interface IMessage extends Document {
-    _id: Schema.Types.ObjectId;
-    // chatId: Schema.Types.ObjectId; // Chat or Room reference
-    sender: Schema.Types.ObjectId; // User who sent the message
-    receiver?: Schema.Types.ObjectId; // Optional (for private DMs)
-
-    content?: string;
-    type: "text" | "image" | "video" | "file" | "system";
-    attachments?: string[]; // URLs for media (Cloudinary/S3, etc.)
-
-    status: "sent" | "delivered" | "read";
-    deletedFor?: mongoose.Types.ObjectId[]; // IDs of users who deleted the message
-
-    readAt?: Date;
-    deliveredAt?: Date;
-    createdAt: Date;
-    updatedAt: Date;
-
-    markAsRead(): Promise<void>;
-    softDeleteForUser(
-        userId: mongoose.Types.ObjectId,
-        options?: { forAll?: boolean }
-    ): Promise<void>;
+export enum MessageType {
+    TEXT = "text",
+    FILE = "file",
+    IMAGE = "image",
+    VIDEO = "video",
+    AUDIO = "audio",
 }
 
-/**
- * 🔹 Message DTO
- */
-export interface MessageDTO {
-    id: Schema.Types.ObjectId;
-    chatId: Schema.Types.ObjectId; // Chat or Room reference
-    sender: Schema.Types.ObjectId; // User who sent the message
-    receiver?: Schema.Types.ObjectId; // Optional (for private DMs)
+export enum MessageStatus {
+    SENT = "sent",
+    READ = "read",
+    DELIVERED = "delivered",
+}
+
+export interface Attachment {
+    url: string;
+    type: string;
+    size: number;
+    name: string;
+}
+
+export enum AttachmentType {
+    FILE = "file",
+    IMAGE = "image",
+    VIDEO = "video",
+    AUDIO = "audio",
+}
+
+export interface IMessage extends Document {
+    _id: Schema.Types.ObjectId;
+
+    chatId: Schema.Types.ObjectId;
+    senderId: Schema.Types.ObjectId;
 
     content?: string;
-    type: "text" | "image" | "video" | "file" | "system";
-    attachments?: string[]; // URLs for media (Cloudinary/S3, etc.)
+    type: MessageType;
 
-    status: "sent" | "delivered" | "read";
-    deletedFor?: Schema.Types.ObjectId[]; // IDs of users who deleted the message
+    attachments?: Attachment[];
+    replyTo?: Schema.Types.ObjectId;
 
-    readAt?: Date;
-    deliveredAt?: Date;
-    createdAt: Date;
+    status: MessageStatus;
+    readBy: Map<Schema.Types.ObjectId, Date>;
+    deliveredTo: Map<Schema.Types.ObjectId, Date>;
+
+    isEdited: boolean;
+    isDeleted: boolean;
+    deletedFor: Schema.Types.ObjectId[];
+
     updatedAt: Date;
+    createdAt: Date;
+}
+
+export interface MessageDTO {
+    id: string;
+
+    chatId: string;
+    senderId: string;
+
+    content?: string;
+    type: MessageType;
+
+    attachments?: Attachment[];
+    replyTo?: string;
+
+    status: MessageStatus;
+    readBy: { userId: string; date: Date }[];
+    deliveredTo: { userId: string; date: Date }[];
+
+    isEdited: boolean;
+    isDeleted: boolean;
+    deletedFor: string[];
+
+    updatedAt: Date;
+    createdAt: Date;
 }

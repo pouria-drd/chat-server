@@ -3,25 +3,10 @@ import jwt from "jsonwebtoken";
 import mongoose, { Schema } from "mongoose";
 
 import ENV from "@/configs/env.config";
-import { IUser, UserPayload } from "@/types/user.type";
+import { IUser, UserGender, UserPayload, UserRole, UserStatus } from "@/types/user.type";
 
 const UserSchema = new Schema<IUser>(
     {
-        username: {
-            type: String,
-            trim: true,
-            unique: true,
-            index: true, // ✅ performance
-            lowercase: true,
-            required: [true, "Username is required"],
-            set: (v: string) => v.trim().toLowerCase(),
-            minlength: [3, "Username must be at least 3 characters"],
-            maxlength: [20, "Username cannot exceed 20 characters"],
-            match: [
-                /^[a-z][a-z0-9_]{2,19}$/,
-                "Username must start with a letter and contain only lowercase letters, numbers, or underscores",
-            ],
-        },
         email: {
             type: String,
             trim: true,
@@ -41,57 +26,20 @@ const UserSchema = new Schema<IUser>(
             sparse: true, // ✅ allows nulls without unique conflicts
             match: [/^\+?[0-9]{7,15}$/, "Please enter a valid phone number with country code"],
         },
-        firstName: {
+        username: {
             type: String,
             trim: true,
-            minlength: [2, "First name must be at least 2 characters"],
-            maxlength: [50, "First name cannot exceed 50 characters"],
-        },
-        lastName: {
-            type: String,
-            trim: true,
-            minlength: [2, "Last name must be at least 2 characters"],
-            maxlength: [50, "Last name cannot exceed 50 characters"],
-        },
-        birthDate: {
-            type: Date,
-            validate: {
-                validator: (value: Date) => value <= new Date(),
-                message: "Birth date cannot be in the future",
-            },
-        },
-        gender: {
-            type: String,
-            enum: ["male", "female", "other"],
-            default: "other",
-        },
-        role: {
-            type: String,
-            enum: ["user", "admin"],
-            default: "user",
-        },
-        status: {
-            type: String,
-            enum: ["active", "inactive", "banned", "deleted"],
-            default: "active",
-        },
-        isVerified: {
-            type: Boolean,
-            default: false,
-        },
-        avatar: {
-            type: String,
-            validate: {
-                validator: (value: string) =>
-                    /^(https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$|^\/uploads\/.+\.(jpg|jpeg|png|gif|webp)$)/i.test(
-                        value
-                    ),
-                message: "Avatar must be a valid image URL or local upload path",
-            },
-        },
-        lastLogin: {
-            type: Date,
-            default: null,
+            unique: true,
+            index: true, // ✅ performance
+            lowercase: true,
+            required: [true, "Username is required"],
+            set: (v: string) => v.trim().toLowerCase(),
+            minlength: [3, "Username must be at least 3 characters"],
+            maxlength: [20, "Username cannot exceed 20 characters"],
+            match: [
+                /^[a-z][a-z0-9_]{2,19}$/,
+                "Username must start with a letter and contain only lowercase letters, numbers, or underscores",
+            ],
         },
         password: {
             type: String,
@@ -105,6 +53,83 @@ const UserSchema = new Schema<IUser>(
                 message:
                     "Password must include uppercase, lowercase, number, and special character",
             },
+        },
+
+        bio: {
+            type: String,
+            maxlength: [255, "Bio cannot exceed 255 characters"],
+        },
+        avatar: {
+            type: String,
+            validate: {
+                validator: (value: string) =>
+                    /^(https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$|^\/uploads\/.+\.(jpg|jpeg|png|gif|webp)$)/i.test(
+                        value
+                    ),
+                message: "Avatar must be a valid image URL or local upload path",
+            },
+        },
+        lastName: {
+            type: String,
+            trim: true,
+            minlength: [2, "Last name must be at least 2 characters"],
+            maxlength: [50, "Last name cannot exceed 50 characters"],
+        },
+        firstName: {
+            type: String,
+            trim: true,
+            minlength: [2, "First name must be at least 2 characters"],
+            maxlength: [50, "First name cannot exceed 50 characters"],
+        },
+
+        isOnline: {
+            type: Boolean,
+            default: false,
+        },
+        isVerified: {
+            type: Boolean,
+            default: false,
+        },
+        phoneVerified: {
+            type: Boolean,
+            default: false,
+        },
+        emailVerified: {
+            type: Boolean,
+            default: false,
+        },
+
+        role: {
+            type: String,
+            enum: Object.values(UserRole),
+            default: UserRole.USER,
+        },
+        gender: {
+            type: String,
+            enum: Object.values(UserGender),
+            default: UserGender.OTHER,
+        },
+        status: {
+            type: String,
+            enum: Object.values(UserStatus),
+            default: UserStatus.ACTIVE,
+        },
+
+        birthDate: {
+            type: Date,
+            validate: {
+                validator: (value: Date) => value <= new Date(),
+                message: "Birth date cannot be in the future",
+            },
+        },
+
+        lastSeen: {
+            type: Date,
+            default: null,
+        },
+        lastLogin: {
+            type: Date,
+            default: null,
         },
     },
     { timestamps: true }
@@ -141,6 +166,12 @@ UserSchema.methods.generateAuthToken = function (): string {
 // Update last login
 UserSchema.methods.updateLastLogin = async function () {
     this.lastLogin = new Date();
+    await this.save();
+};
+
+// Update last seen
+UserSchema.methods.updateLastSeen = async function () {
+    this.lastSeen = new Date();
     await this.save();
 };
 
