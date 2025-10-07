@@ -64,3 +64,27 @@ export const login = async (req: Request, res: Response) => {
         },
     });
 };
+
+/**
+ * Check if user is authenticated
+ * @param req - Express request object
+ * @param res - Express response object
+ */
+export const checkAuth = async (req: Request, res: Response) => {
+    // Check if user is authenticated
+    const reqUser = req.user;
+    if (!reqUser) throw new AppError("Unauthorized", "User not authenticated");
+    // Find user by id
+    const user = await User.findById(reqUser.id);
+    if (!user) throw new AppError("NotFound", "User not found");
+    // Convert user to DTO
+    const _userDto = userDto(user);
+    // Return user
+    return res.json({
+        success: true,
+        message: "User fetched successfully",
+        data: {
+            user: _userDto,
+        },
+    });
+};
