@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Request, Response } from "express";
 
 import Chat from "@/models/chat.model";
@@ -54,5 +55,50 @@ export const getChatMessages = async (req: Request, res: Response) => {
         totalMessages,
         totalPages: Math.ceil(totalMessages / limit),
         messages,
+    });
+};
+
+/**
+ * Send a message to a chat
+ * @param req - Express request object
+ * @param res - Express response object
+ */
+export const sendMessage = async (req: Request, res: Response) => {
+    const { chatId } = req.params;
+    const userId = req.user?.id;
+    const { content, type, attachments, replyTo } = req.body;
+
+    // Validate: must have text or attachments
+    if (!content && (!attachments || attachments.length === 0)) {
+        throw new AppError("BadRequest", "Message must have text or attachments");
+    }
+
+    // Validate: if replyTo exists, it must be a valid message ID
+    if (replyTo && !mongoose.Types.ObjectId.isValid(replyTo)) {
+        throw new AppError("BadRequest", "Invalid replyTo ID");
+    }
+
+    // Create new message
+    const newMessage = new Message({
+        chatId,
+        senderId: userId,
+        content,
+        type,
+        attachments,
+        replyTo: replyTo || null,
+        status: "sent",
+    });
+
+    await newMessage.save();
+
+    // Update chat's last message
+    await Chat.findByIdAndUpdate(chatId, { lastMessage: newMessage._id }, { new: true });
+
+    return res.status(201).json({
+        success: true,
+        message: "Message sent successfully",
+        data: {
+            message: newMessage,
+        },
     });
 };
