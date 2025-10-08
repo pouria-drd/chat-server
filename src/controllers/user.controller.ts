@@ -1,5 +1,4 @@
 import User from "@/models/user.model";
-import { userDto } from "@/dtos/user.dto";
 import { Request, Response } from "express";
 import { AppError } from "@/errors/app.error";
 import { deleteFile } from "@/utils/file.util";
@@ -15,13 +14,13 @@ export const getAuthUser = async (req: Request, res: Response) => {
     const user = await User.findById(reqUser.id);
     if (!user) throw new AppError("NotFound", "User not found");
     // Convert user to DTO
-    const _userDto = userDto(user);
+    const userJson = user.toJSON();
     // Return user
     return res.json({
         success: true,
         message: "User fetched successfully",
         data: {
-            user: _userDto,
+            user: userJson,
         },
     });
 };
@@ -46,11 +45,13 @@ export const uploadUserAvatar = async (req: Request, res: Response) => {
     await user.save();
 
     // Return updated user
-    const _userDto = userDto(user);
+    const userJson = user.toJSON();
 
     return res.json({
         success: true,
         message: "Avatar updated successfully",
-        data: { user: _userDto },
+        data: {
+            user: userJson,
+        },
     });
 };

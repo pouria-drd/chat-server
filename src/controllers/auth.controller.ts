@@ -1,5 +1,4 @@
 import User from "@/models/user.model";
-import { userDto } from "@/dtos/user.dto";
 import { Request, Response } from "express";
 import { AppError } from "@/errors/app.error";
 import { createUser } from "@/services/user.service";
@@ -24,6 +23,7 @@ export const register = async (req: Request, res: Response) => {
     });
     // Update last login and generate token
     await user.updateLastLogin();
+    const userJson = user.toJSON();
     const token = user.generateAuthToken();
     // Return user and token
     return res.status(201).json({
@@ -31,7 +31,7 @@ export const register = async (req: Request, res: Response) => {
         message: "User registered successfully",
         data: {
             token,
-            user: userDto(user),
+            user: userJson,
         },
     });
 };
@@ -46,13 +46,15 @@ export const login = async (req: Request, res: Response) => {
     // Find user by username OR email
     const user = await User.findOne({
         $or: [{ username: identifier }, { email: identifier }],
-    });
+    }).select("+password");
     // Check if user exists and password matches
     if (!user) throw new AppError("BadRequest", "Invalid credentials");
     const isMatch = await user.comparePassword(password);
     if (!isMatch) throw new AppError("BadRequest", "Invalid credentials");
     // Update last login and generate token
     await user.updateLastLogin();
+    console.log(user);
+    const userJson = user.toJSON();
     const token = user.generateAuthToken();
     // Return user and token
     return res.json({
@@ -60,7 +62,7 @@ export const login = async (req: Request, res: Response) => {
         message: "Login successful",
         data: {
             token,
-            user: userDto(user),
+            user: userJson,
         },
     });
 };
@@ -77,14 +79,13 @@ export const checkAuth = async (req: Request, res: Response) => {
     // Find user by id
     const user = await User.findById(reqUser.id);
     if (!user) throw new AppError("NotFound", "User not found");
-    // Convert user to DTO
-    const _userDto = userDto(user);
+    const userJson = user.toJSON();
     // Return user
     return res.json({
         success: true,
         message: "User fetched successfully",
         data: {
-            user: _userDto,
+            user: userJson,
         },
     });
 };

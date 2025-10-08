@@ -11,6 +11,7 @@ export enum MessageType {
 export enum MessageStatus {
     SENT = "sent",
     READ = "read",
+    FAILED = "failed",
     DELIVERED = "delivered",
 }
 
@@ -45,14 +46,14 @@ export interface IMessage extends Document {
     deliveredTo: Map<Schema.Types.ObjectId, Date>;
 
     isEdited: boolean;
-    isDeleted: boolean;
-    deletedFor: Schema.Types.ObjectId[];
+    isDeletedForMe: boolean;
+    isDeletedForAll: boolean;
 
     updatedAt: Date;
     createdAt: Date;
 }
 
-export interface MessageDTO {
+export interface Message {
     id: string;
 
     chatId: string;
@@ -69,8 +70,8 @@ export interface MessageDTO {
     deliveredTo: { userId: string; date: Date }[];
 
     isEdited: boolean;
-    isDeleted: boolean;
-    deletedFor: string[];
+    isDeletedForMe: boolean;
+    isDeletedForAll: boolean;
 
     updatedAt: Date;
     createdAt: Date;

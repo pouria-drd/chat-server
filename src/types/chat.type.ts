@@ -1,47 +1,44 @@
 import { Schema } from "mongoose";
 
 export enum ChatType {
-    PRIVATE = "private",
     GROUP = "group",
+    PRIVATE = "private",
     CHANNEL = "channel",
 }
 
 export interface IChat extends Document {
     _id: Schema.Types.ObjectId;
+    name: string;
+    type: ChatType;
+    avatar: string;
+    description: string;
 
     owner: Schema.Types.ObjectId;
-
-    name?: string;
-    description?: string;
-
-    type: ChatType;
     admins: Schema.Types.ObjectId[];
     participants: Schema.Types.ObjectId[];
+    participantsCount: number;
 
-    avatar?: string;
-    lastMessage?: Schema.Types.ObjectId;
-
+    lastMessage: Schema.Types.ObjectId;
     unreadCount: Map<string, number>;
 
     updatedAt: Date;
     createdAt: Date;
 }
 
-export interface ChatDTO {
+export interface Chat {
     id: string;
-    owner: string;
-
     name?: string;
+    type: ChatType;
+    avatar?: string;
     description?: string;
 
-    type: ChatType;
-    admins: string[];
+    owner?: string;
+    admins?: string[];
     participants: string[];
+    participantsCount: number;
 
-    avatar?: string;
     lastMessage?: string;
-
-    unreadCount: Map<string, number>;
+    unreadCount: { [key: string]: number };
 
     updatedAt: Date;
     createdAt: Date;

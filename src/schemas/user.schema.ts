@@ -19,7 +19,7 @@ export const registerSchema = z.object({
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/,
             "Password must include uppercase, lowercase, number, and special character"
         ),
-    firstName: z.string().min(2).max(50).optional(),
+    firstName: z.string("First name is required").min(2).max(50),
     lastName: z.string().min(2).max(50).optional(),
     gender: z.enum(["male", "female", "other"]).optional(),
     birthDate: z.date().optional(),

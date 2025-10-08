@@ -3,9 +3,8 @@ import { Request, Response, NextFunction } from "express";
 
 import ENV from "@/configs/env.config";
 import User from "@/models/user.model";
-import { userDto } from "@/dtos/user.dto";
 import { AppError } from "@/errors/app.error";
-import { CustomJwtPayload } from "@/types/user.type";
+import { CustomJwtPayload, RequestUser } from "@/types/user.type";
 
 const protect = async (req: Request, res: Response, next: NextFunction) => {
     let token: string | undefined;
@@ -24,7 +23,7 @@ const protect = async (req: Request, res: Response, next: NextFunction) => {
         if (!user) {
             throw new AppError("Unauthorized", "Invalid token");
         }
-        req.user = userDto(user);
+        req.user = user.toJSON() as RequestUser;
         next();
     } catch (error) {
         throw new AppError("Unauthorized", "Invalid token");

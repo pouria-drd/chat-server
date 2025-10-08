@@ -6,8 +6,8 @@ const MessageSchema = new Schema<IMessage>(
         chatId: {
             type: Schema.Types.ObjectId,
             ref: "Chat",
-            required: true,
             index: true,
+            required: true,
         },
         senderId: {
             type: Schema.Types.ObjectId,
@@ -82,22 +82,20 @@ const MessageSchema = new Schema<IMessage>(
             type: Boolean,
             default: false,
         },
-        isDeleted: {
+        isDeletedForMe: {
             type: Boolean,
             default: false,
         },
-        deletedFor: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "User",
-            },
-        ],
+        isDeletedForAll: {
+            type: Boolean,
+            default: false,
+        },
     },
     { timestamps: true }
 );
 
-MessageSchema.index({ chatId: 1, createdAt: -1 });
 MessageSchema.index({ senderId: 1 });
+MessageSchema.index({ chatId: 1, createdAt: -1 });
 
 const Message = mongoose.model<IMessage>("Message", MessageSchema);
 

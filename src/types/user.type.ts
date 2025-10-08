@@ -26,14 +26,15 @@ export interface IUser extends Document {
     _id: Schema.Types.ObjectId; // Mongoose ObjectId
 
     email: string;
-    phone?: string;
+    phone: string;
     username: string;
+    fullName: string;
     password: string;
 
-    bio?: string;
-    avatar?: string;
-    lastName?: string;
-    firstName?: string;
+    bio: string;
+    avatar: string;
+    lastName: string;
+    firstName: string;
 
     isOnline: boolean;
     isVerified: boolean;
@@ -44,10 +45,10 @@ export interface IUser extends Document {
     gender: UserGender;
     status: UserStatus;
 
-    birthDate?: Date;
+    birthDate: Date;
 
     lastSeen: Date;
-    lastLogin?: Date;
+    lastLogin: Date;
 
     updatedAt: Date;
     createdAt: Date;
@@ -60,19 +61,20 @@ export interface IUser extends Document {
 }
 
 /**
- * UserDTO — Data Transfer Object for returning user data to clients
+ * User — Data Transfer Object for returning user data to clients
  */
-export interface UserDTO {
+export interface User {
     id: string; // string type for frontend usage
 
     email: string;
     phone?: string;
     username: string;
+    fullName: string;
 
     bio?: string;
     avatar?: string;
     lastName?: string;
-    firstName?: string;
+    firstName: string;
 
     isOnline: boolean;
     isVerified: boolean;
@@ -104,7 +106,7 @@ export interface UserPayload {
 /**
  * RequestUser — request user object (JWT + DTO)
  */
-export type RequestUser = JwtPayload & UserDTO;
+export type RequestUser = JwtPayload & User;
 
 /**
  * CustomJwtPayload — JWT payload including user info
