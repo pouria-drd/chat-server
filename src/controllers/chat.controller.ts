@@ -1,5 +1,7 @@
-import Chat from "@/models/chat.model";
 import { Request, Response } from "express";
+
+import Chat from "@/models/chat.model";
+import { AppError } from "@/errors/app.error";
 
 /**
  * Get chats that this user participates in
@@ -7,8 +9,9 @@ import { Request, Response } from "express";
  * @param res - Express response object
  */
 export const getUserChats = async (req: Request, res: Response) => {
+    // check if user is authenticated
     const userId = req.user?.id;
-
+    if (!userId) throw new AppError("Unauthorized", "User not authenticated");
     // find chats that this user participates in
     const chats = await Chat.find({
         participants: userId,
