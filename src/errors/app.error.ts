@@ -16,9 +16,10 @@ export class AppError<T = unknown> extends Error implements IError<T> {
 
     toJSON(): IErrorResponse<T> {
         return {
+            success: false,
+            message: this.message,
             error: {
                 type: this.type,
-                message: this.message,
                 statusCode: this.statusCode,
                 details: this.details,
             },

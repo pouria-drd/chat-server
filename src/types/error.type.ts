@@ -22,11 +22,12 @@ export const ErrorStatusMap: Record<ErrorType, number> = {
 
 export interface IError<T = unknown> {
     type: ErrorType;
-    message: string;
     statusCode: number;
     details?: T;
 }
 
 export interface IErrorResponse<T = unknown> {
+    success: false;
+    message: string;
     error: IError<T>;
 }

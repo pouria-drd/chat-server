@@ -1,7 +1,7 @@
 import { Router } from "express";
 import protect from "@/middlewares/auth.middleware";
 import asyncHandler from "@/middlewares/async-handler.middleware";
-import { loginSchema, registerSchema } from "@/schemas/user.schema";
+import { loginSchema, registerSchema } from "@/validations/auth.schema";
 import validateRequest from "@/middlewares/validate-request.middleware";
 import { checkAuth, register, login } from "@/controllers/auth.controller";
 

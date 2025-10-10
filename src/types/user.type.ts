@@ -87,7 +87,7 @@ export interface User {
 
     birthDate?: Date;
 
-    lastSeen: Date;
+    lastSeen?: Date;
     lastLogin?: Date;
 
     updatedAt: Date;
