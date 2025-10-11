@@ -11,6 +11,9 @@ import { createUser } from "@/services/user.service";
 export const register = async (req: Request, res: Response) => {
     // Get user data from request body
     const { username, email, password, firstName, lastName, gender, birthDate } = req.body;
+
+    const _birthDate = birthDate ? new Date(birthDate) : undefined;
+
     // Create user via service
     const user = await createUser({
         username: username.trim().toLowerCase(),
@@ -19,7 +22,7 @@ export const register = async (req: Request, res: Response) => {
         firstName,
         lastName,
         gender,
-        birthDate,
+        birthDate: _birthDate,
     });
     // Update last login and generate token
     await user.updateLastLogin();
@@ -53,7 +56,6 @@ export const login = async (req: Request, res: Response) => {
     if (!isMatch) throw new AppError("BadRequest", "Invalid credentials");
     // Update last login and generate token
     await user.updateLastLogin();
-    console.log(user);
     const userJson = user.toJSON();
     const token = user.generateAuthToken();
     // Return user and token

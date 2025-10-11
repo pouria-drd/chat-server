@@ -32,7 +32,6 @@ const UserSchema = new Schema<IUser>(
             trim: true,
             unique: true,
             sparse: true,
-            default: "",
         },
         password: {
             type: String,

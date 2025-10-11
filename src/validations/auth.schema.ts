@@ -36,17 +36,15 @@ export const registerSchema = z.object({
     gender: z.enum(["male", "female", "other"]).optional(),
 
     birthDate: z
-        .date()
+        .union([z.date(), z.string().transform((val) => (val ? new Date(val) : undefined))])
         .optional()
         .refine(
             (date) => {
-                if (!date) return true; // allow empty
+                if (!date) return true;
                 const year1900 = new Date("1900-01-01");
                 const now = new Date();
                 return date >= year1900 && date <= now;
             },
-            {
-                message: "Birthday must be between 1900-01-01 and today",
-            }
+            { message: "Birth date must be between 1900 and today" }
         ),
 });
