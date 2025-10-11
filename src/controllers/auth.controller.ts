@@ -2,6 +2,7 @@ import User from "@/models/user.model";
 import { Request, Response } from "express";
 import { AppError } from "@/errors/app.error";
 import { createUser } from "@/services/user.service";
+import { UserStatus } from "@/types/user.type";
 
 /**
  * Register a new user
@@ -54,19 +55,29 @@ export const login = async (req: Request, res: Response) => {
     if (!user) throw new AppError("BadRequest", "Invalid credentials");
     const isMatch = await user.comparePassword(password);
     if (!isMatch) throw new AppError("BadRequest", "Invalid credentials");
-    // Update last login and generate token
-    await user.updateLastLogin();
-    const userJson = user.toJSON();
-    const token = user.generateAuthToken();
-    // Return user and token
-    return res.json({
-        success: true,
-        message: "Login successful",
-        data: {
-            token,
-            user: userJson,
-        },
-    });
+
+    // Check if user can login
+    if (user.status === UserStatus.BANNED) {
+        throw new AppError("Forbidden", "Account is banned");
+    } else if (user.status === UserStatus.INACTIVE) {
+        throw new AppError("Forbidden", "Account is inactive");
+    } else if (user.status === UserStatus.DELETED) {
+        throw new AppError("Forbidden", "Account is deleted");
+    } else {
+        // Update last login and generate token
+        await user.updateLastLogin();
+        const userJson = user.toJSON();
+        const token = user.generateAuthToken();
+        // Return user and token
+        return res.json({
+            success: true,
+            message: "Login successful",
+            data: {
+                token,
+                user: userJson,
+            },
+        });
+    }
 };
 
 /**
