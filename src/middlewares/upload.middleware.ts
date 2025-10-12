@@ -1,8 +1,6 @@
 import { MulterError } from "multer";
-import { Request, Response, NextFunction } from "express";
-
 import upload from "@/configs/multer.config";
-import { AppError } from "@/errors/app.error";
+import { Request, Response, NextFunction } from "express";
 
 /**
  * Middleware to handle avatar uploads
@@ -10,21 +8,57 @@ import { AppError } from "@/errors/app.error";
  @param res - Express response object
  @param next - Express next function
  */
-export const uploadAvatar = (req: Request, res: Response, next: NextFunction) => {
+async function uploadAvatar(req: Request, res: Response, next: NextFunction) {
     try {
         const uploader = upload.single("avatar");
 
         uploader(req, res, (err) => {
             if (err instanceof MulterError) {
                 if (err.code === "LIMIT_FILE_SIZE")
-                    throw new AppError("BadRequest", "File too large");
-                throw new AppError("BadRequest", err.message);
+                    return res.status(400).json({
+                        success: false,
+                        message: "File too large",
+                        error: {
+                            type: "BadRequest",
+                            statusCode: 400,
+                            details: {
+                                file: "File too large",
+                                avatar: "File too large",
+                            },
+                        },
+                    });
+
+                return res.status(400).json({
+                    success: false,
+                    message: "Avatar upload failed",
+                    error: {
+                        type: "BadRequest",
+                        statusCode: 400,
+                        details: {
+                            file: "Avatar upload failed",
+                            avatar: "Avatar upload failed",
+                        },
+                    },
+                });
             } else if (err) {
-                throw new AppError("BadRequest", "Avatar upload failed");
+                return res.status(500).json({
+                    success: false,
+                    message: "Avatar upload failed",
+                    error: {
+                        type: "Internal",
+                        statusCode: 400,
+                        details: {
+                            file: "Avatar upload failed",
+                            avatar: "Avatar upload failed",
+                        },
+                    },
+                });
             }
             next();
         });
     } catch (error) {
-        throw new AppError("Internal", "Internal server error");
+        next(error);
     }
-};
+}
+
+export { uploadAvatar };

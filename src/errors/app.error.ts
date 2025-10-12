@@ -1,4 +1,4 @@
-import { ErrorStatusMap, ErrorType, IError, IErrorResponse } from "@/types/error.type";
+import { ErrorStatusMap, ErrorType, IError, IErrorResponse } from "@/types";
 
 export class AppError<T = unknown> extends Error implements IError<T> {
     public readonly type: ErrorType;

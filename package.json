@@ -7,7 +7,8 @@
         "lint": "eslint 'src/**/*.ts'",
         "build": "tsc && tsc-alias",
         "start": "cross-env NODE_ENV=production node dist/server.js",
-        "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/server.ts"
+        "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/server.ts",
+        "create:superuser": "ts-node -r tsconfig-paths/register src/scripts/create-superuser.ts"
     },
     "keywords": [],
     "author": "",

@@ -3,9 +3,9 @@ import jwt from "jsonwebtoken";
 import mongoose, { Schema } from "mongoose";
 
 import ENV from "@/configs/env.config";
-import { IUser, UserGender, UserPayload, UserRole, UserStatus } from "@/types/user.type";
+import { IUserDocument, UserGender, UserPayload, UserRole, UserStatus } from "@/types";
 
-const UserSchema = new Schema<IUser>(
+const UserSchema = new Schema<IUserDocument>(
     {
         email: {
             type: String,
@@ -27,12 +27,6 @@ const UserSchema = new Schema<IUser>(
             maxlength: [20, "Maximum 20 characters"],
             match: [/^[a-z][a-z0-9_]{2,19}$/, "Username must start with a letter"],
         },
-        phone: {
-            type: String,
-            trim: true,
-            unique: true,
-            sparse: true,
-        },
         password: {
             type: String,
             minlength: 8,
@@ -48,11 +42,12 @@ const UserSchema = new Schema<IUser>(
         lastName: {
             type: String,
             trim: true,
+            required: false,
         },
         bio: {
             type: String,
             maxlength: 255,
-            default: "",
+            required: false,
         },
         avatar: {
             type: String,
@@ -74,10 +69,6 @@ const UserSchema = new Schema<IUser>(
             type: Boolean,
             default: false,
         },
-        phoneVerified: {
-            type: Boolean,
-            default: false,
-        },
         emailVerified: {
             type: Boolean,
             default: false,
@@ -86,23 +77,23 @@ const UserSchema = new Schema<IUser>(
         role: {
             type: String,
             index: true,
-            default: UserRole.USER,
+            default: "user",
             enum: Object.values(UserRole),
         },
         gender: {
             type: String,
-            default: UserGender.OTHER,
+            default: "other",
             enum: Object.values(UserGender),
         },
         status: {
             type: String,
             index: true,
-            default: UserStatus.ACTIVE,
+            default: "active",
             enum: Object.values(UserStatus),
         },
         birthDate: {
             type: Date,
-            default: null,
+            required: false,
             validate: {
                 validator: (v: Date) => v <= new Date(),
                 message: "Birth date cannot be in the future",
@@ -110,11 +101,11 @@ const UserSchema = new Schema<IUser>(
         },
         lastSeen: {
             type: Date,
-            default: null,
+            required: false,
         },
         lastLogin: {
             type: Date,
-            default: null,
+            required: false,
         },
     },
     {
@@ -134,7 +125,7 @@ const UserSchema = new Schema<IUser>(
 );
 
 // ✅ Hash password
-UserSchema.pre<IUser>("save", async function (next) {
+UserSchema.pre<IUserDocument>("save", async function (next) {
     if (!this.isModified("password")) return next();
     this.password = await bcrypt.hash(this.password, 10);
     next();
@@ -173,10 +164,13 @@ UserSchema.methods.updateLastSeen = async function () {
     await this.updateOne({ lastSeen: new Date() });
 };
 
+/**
+ * Get user full name
+ */
 UserSchema.virtual("fullName").get(function () {
     return `${this.firstName} ${this.lastName || ""}`.trim();
 });
 
-const User = mongoose.model<IUser>("User", UserSchema);
+const User = mongoose.model<IUserDocument>("User", UserSchema);
 
 export default User;

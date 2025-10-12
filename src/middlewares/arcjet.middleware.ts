@@ -1,5 +1,4 @@
 import aj from "@/configs/arcjet.config";
-// import logger from "@/config/logger.config";
 import { AppError } from "@/errors/app.error";
 import { isSpoofedBot } from "@arcjet/inspect";
 import { NextFunction, Request, Response } from "express";
@@ -38,7 +37,6 @@ const ajProtect = async (req: Request, res: Response, next: NextFunction) => {
             next();
         }
     } catch (error) {
-        // logger.error("❌ ArcJet middleware error:", error);
         next(error);
     }
 };

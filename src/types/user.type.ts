@@ -1,32 +1,35 @@
 import { JwtPayload } from "jsonwebtoken";
-import { Document, Schema } from "mongoose";
+import { BaseDocument } from "./common.types";
 
-export enum UserGender {
-    MALE = "male",
-    FEMALE = "female",
-    OTHER = "other",
-}
+export const UserGender = {
+    male: "male",
+    female: "female",
+    other: "other",
+} as const;
 
-export enum UserRole {
-    USER = "user",
-    ADMIN = "admin",
-}
+export type UserGender = (typeof UserGender)[keyof typeof UserGender];
 
-export enum UserStatus {
-    ACTIVE = "active",
-    INACTIVE = "inactive",
-    BANNED = "banned",
-    DELETED = "deleted",
-}
+export const UserRole = {
+    user: "user",
+    admin: "admin",
+} as const;
+
+export type UserRole = (typeof UserRole)[keyof typeof UserRole];
+
+export const UserStatus = {
+    active: "active",
+    inactive: "inactive",
+    banned: "banned",
+    deleted: "deleted",
+} as const;
+
+export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus];
 
 /**
- * IUser interface — represents a user document in MongoDB
+ * IUserDocument interface — represents a user document in MongoDB
  */
-export interface IUser extends Document {
-    _id: Schema.Types.ObjectId; // Mongoose ObjectId
-
+export interface IUserDocument extends BaseDocument {
     email: string;
-    phone: string;
     username: string;
     fullName: string;
     password: string;
@@ -38,7 +41,6 @@ export interface IUser extends Document {
 
     isOnline: boolean;
     isVerified: boolean;
-    phoneVerified: boolean;
     emailVerified: boolean;
 
     role: UserRole;
@@ -49,9 +51,6 @@ export interface IUser extends Document {
 
     lastSeen: Date;
     lastLogin: Date;
-
-    updatedAt: Date;
-    createdAt: Date;
 
     updateLastSeen(): Promise<void>;
     updateLastLogin(): Promise<void>;
@@ -67,7 +66,6 @@ export interface User {
     id: string; // string type for frontend usage
 
     email: string;
-    phone?: string;
     username: string;
     fullName: string;
 
@@ -78,7 +76,6 @@ export interface User {
 
     isOnline: boolean;
     isVerified: boolean;
-    phoneVerified: boolean;
     emailVerified: boolean;
 
     role: UserRole;

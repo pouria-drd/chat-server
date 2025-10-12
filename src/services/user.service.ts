@@ -1,5 +1,5 @@
 import User from "@/models/user.model";
-import { IUser } from "@/types/user.type";
+import { IUserDocument } from "@/types";
 import { AppError } from "@/errors/app.error";
 
 interface CreateUserData {
@@ -14,7 +14,7 @@ interface CreateUserData {
  * @param data - User data
  * @returns Created user
  */
-export const createUser = async (data: CreateUserData): Promise<IUser> => {
+export const createUser = async (data: CreateUserData): Promise<IUserDocument> => {
     // Check if user already exists with the same username or email
     const existing = await User.findOne({
         $or: [{ username: data.username }, { email: data.email }],

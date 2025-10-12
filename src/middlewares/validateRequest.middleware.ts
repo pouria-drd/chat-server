@@ -2,7 +2,7 @@ import { z, ZodError, ZodType } from "zod";
 import { AppError } from "@/errors/app.error";
 import { Request, Response, NextFunction } from "express";
 
-const validateRequest = <T extends ZodType<any, any, any>>(schema: T) => {
+function validateRequest<T extends ZodType<any, any, any>>(schema: T) {
     return (req: Request<unknown, unknown, z.output<T>>, res: Response, next: NextFunction) => {
         try {
             req.body = schema.parse(req.body);
@@ -23,6 +23,6 @@ const validateRequest = <T extends ZodType<any, any, any>>(schema: T) => {
             throw new AppError("Internal", "Unexpected validation error");
         }
     };
-};
+}
 
 export default validateRequest;

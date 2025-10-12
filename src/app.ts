@@ -1,10 +1,3 @@
-/**
- * Main Express Application
- * -------------------------
- * This file initializes and configures the Express app with
- * security, middleware, routes, and error handling.
- */
-
 import path from "path";
 import cors from "cors";
 import helmet from "helmet";
@@ -17,7 +10,7 @@ import ENV from "./configs/env.config";
 import { getAppVersion } from "@/utils/app.util";
 import ajProtect from "@/middlewares/arcjet.middleware";
 import errorMiddleware from "@/middlewares/error.middleware";
-import httpLogger from "@/middlewares/http-logger.middleware";
+import httpLogger from "@/middlewares/httpLogger.middleware";
 
 const app: Application = express();
 
@@ -32,7 +25,7 @@ app.use(favicon(path.join(process.cwd(), "public", "favicon.ico")));
  * Helmet helps secure Express apps by setting various HTTP headers.
  * It protects against well-known web vulnerabilities like:
  * - Cross-Site Scripting (XSS)
- * - Clickjacking
+ * - Click jacking
  * - MIME type sniffing
  *
  * Options:

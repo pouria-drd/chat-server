@@ -1,8 +1,8 @@
 import { Router } from "express";
-import protect from "@/middlewares/auth.middleware";
-import asyncHandler from "@/middlewares/async-handler.middleware";
+import { protect } from "@/middlewares/auth.middleware";
+import asyncHandler from "@/middlewares/asyncHandler.middleware";
+import validateRequest from "@/middlewares/validateRequest.middleware";
 import { loginSchema, registerSchema } from "@/validations/auth.schema";
-import validateRequest from "@/middlewares/validate-request.middleware";
 import { checkAuth, register, login } from "@/controllers/auth.controller";
 
 const authRouter = Router();

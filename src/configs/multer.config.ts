@@ -6,7 +6,7 @@ import { Request } from "express";
 import ENV from "./env.config";
 import logger from "./logger.config";
 
-const AVATAR_DIR = path.join(process.cwd(), "public/uploads/avatars");
+const AVATAR_DIR = path.join(process.cwd(), "uploads/avatars");
 
 // Ensure directory exists
 if (!fs.existsSync(AVATAR_DIR)) {

@@ -2,7 +2,6 @@ import User from "@/models/user.model";
 import { Request, Response } from "express";
 import { AppError } from "@/errors/app.error";
 import { createUser } from "@/services/user.service";
-import { UserStatus } from "@/types/user.type";
 
 /**
  * Register a new user
@@ -52,16 +51,16 @@ export const login = async (req: Request, res: Response) => {
         $or: [{ username: identifier }, { email: identifier }],
     }).select("+password");
     // Check if user exists and password matches
-    if (!user) throw new AppError("BadRequest", "Invalid credentials");
+    if (!user) throw new AppError("BadRequest", "Invalid credentialssssssssssss");
     const isMatch = await user.comparePassword(password);
-    if (!isMatch) throw new AppError("BadRequest", "Invalid credentials");
+    if (!isMatch) throw new AppError("BadRequest", "Invalid credentialswwwwwwwwww");
 
     // Check if user can login
-    if (user.status === UserStatus.BANNED) {
+    if (user.status === "banned") {
         throw new AppError("Forbidden", "Account is banned");
-    } else if (user.status === UserStatus.INACTIVE) {
+    } else if (user.status === "inactive") {
         throw new AppError("Forbidden", "Account is inactive");
-    } else if (user.status === UserStatus.DELETED) {
+    } else if (user.status === "deleted") {
         throw new AppError("Forbidden", "Account is deleted");
     } else {
         // Update last login and generate token

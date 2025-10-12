@@ -1,17 +1,10 @@
 import { Router } from "express";
-import protect from "@/middlewares/auth.middleware";
+import { protect } from "@/middlewares/auth.middleware";
 import { uploadAvatar } from "@/middlewares/upload.middleware";
-import asyncHandler from "@/middlewares/async-handler.middleware";
-import { getAuthUser, uploadUserAvatar } from "@/controllers/user.controller";
+import asyncHandler from "@/middlewares/asyncHandler.middleware";
+import { uploadUserAvatar } from "@/controllers/user.controller";
 
 const userRouter = Router();
-
-/**
- * @route GET /api/users/me
- * @desc Get authenticated user
- * @access Private
- */
-userRouter.get("/me", protect, asyncHandler(getAuthUser));
 
 /**
  * @route POST /api/users/avatar
