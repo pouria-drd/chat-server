@@ -17,7 +17,19 @@ const chatSchema = new Schema<IChatDocument>(
             default: null, // Will be updated as messages are sent
         },
     },
-    { timestamps: true }
+    {
+        timestamps: true,
+        versionKey: false,
+        toJSON: {
+            virtuals: true,
+            versionKey: false,
+            transform(_, ret: Record<string, any>) {
+                ret.id = ret._id?.toString();
+                delete ret._id;
+                return ret;
+            },
+        },
+    }
 );
 
 // Index for efficient lookup and to enforce uniqueness of user pairs

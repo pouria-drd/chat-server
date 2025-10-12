@@ -7,7 +7,7 @@ import express, { Application, Request, Response } from "express";
 
 import router from "@/routes";
 import ENV from "./configs/env.config";
-import { getAppVersion } from "@/utils/app.util";
+import { getAppVersion } from "@/utils/app.utils";
 import ajProtect from "@/middlewares/arcjet.middleware";
 import errorMiddleware from "@/middlewares/error.middleware";
 import httpLogger from "@/middlewares/httpLogger.middleware";

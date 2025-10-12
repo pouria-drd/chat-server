@@ -1,7 +1,7 @@
 import User from "@/models/user.model";
 import { Request, Response } from "express";
 import { AppError } from "@/errors/app.error";
-import { deleteFile } from "@/utils/file.util";
+import { deleteFile } from "@/utils/file.utils";
 
 /**
  * Handles user avatar upload

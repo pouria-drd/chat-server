@@ -7,7 +7,7 @@ import { uploadUserAvatar } from "@/controllers/user.controller";
 const userRouter = Router();
 
 /**
- * @route POST /api/users/avatar
+ * @route POST /api/v1/users/avatar
  * @desc Upload or update user avatar
  * @access Private
  */
