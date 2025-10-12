@@ -1,3 +1,3 @@
-export * from "./user.type";
-export * from "./error.type";
+export * from "./user.types";
+export * from "./error.types";
 export * from "./common.types";

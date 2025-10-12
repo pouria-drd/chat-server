@@ -1,7 +1,7 @@
 import readline from "readline";
 import User from "@/models/user.model";
 import connectDB from "@/configs/db.config";
-import { UserGender } from "@/types/user.type";
+import { UserGender } from "@/types/user.types";
 import { createUser } from "@/services/user.service";
 
 /**
