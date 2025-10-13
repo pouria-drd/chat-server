@@ -6,7 +6,7 @@ import logger from "@/configs/logger.config";
 /**
  * This is for storing online users
  */
-const userSocketMap: Record<string, string> = {};
+const userSocketMap: Record<string, string> = {}; // { userId: socketId }
 
 /**
  * use this function to check if the user is online or not
