@@ -24,6 +24,7 @@ const messageSchema = new Schema<IMessageDocument>(
             type: String,
             trim: true,
             required: true,
+            maxlength: 2048,
         },
 
         readBy: [
