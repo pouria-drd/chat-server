@@ -7,14 +7,14 @@
         "paths": {
             "@/*": ["./src/*"]
         },
-        "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
+        "types": ["node", "express", "socket.io"],
+        "typeRoots": ["./node_modules/@types", "./src/types"],
         "strict": true,
         "skipLibCheck": true,
-        "typeRoots": ["./src/types", "./node_modules/@types"],
-        "types": ["node", "express"],
-        "resolveJsonModule": true
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "forceConsistentCasingInFileNames": true
     },
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "src/types/**/*"],
     "exclude": ["node_modules"]
 }

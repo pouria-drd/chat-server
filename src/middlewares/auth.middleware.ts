@@ -1,4 +1,8 @@
+/// <reference types="@types/express" />
+/// <reference types="../types/express" />
+
 import jwt from "jsonwebtoken";
+import { ExtendedError, Socket } from "socket.io";
 import { Request, Response, NextFunction } from "express";
 
 import ENV from "@/configs/env.config";
@@ -16,6 +20,7 @@ import { CustomJwtPayload, RequestUser, UserRole } from "@/types";
  */
 async function protect(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
+        // extract token from request headers
         let token: string | undefined;
 
         if (req.headers.authorization?.startsWith("Bearer ")) {
@@ -26,9 +31,8 @@ async function protect(req: Request, res: Response, next: NextFunction): Promise
             throw new AppError("Unauthorized", "Authorization header not found");
         }
 
-        let decoded: CustomJwtPayload | null = null;
-
         // Verify JWT
+        let decoded: CustomJwtPayload | null = null;
         try {
             decoded = jwt.verify(token, ENV.JWT_SECRET) as CustomJwtPayload;
         } catch (error) {
@@ -53,6 +57,62 @@ async function protect(req: Request, res: Response, next: NextFunction): Promise
     }
 }
 
+/**
+ * Socket.IO authentication middleware
+ * Checks for a valid JWT token in the http-only cookie
+ * and attaches the user info to the socket
+ */
+const protectSocket = async (socket: Socket, next: (err?: ExtendedError) => void) => {
+    try {
+        // Try extracting from Authorization header
+        const authHeader = socket.handshake.headers.authorization;
+        let token: string | undefined;
+
+        if (authHeader?.startsWith("Bearer ")) {
+            token = authHeader.split(" ")[1];
+        }
+
+        // (Optional fallback) Try extracting from cookies if needed
+        if (!token) {
+            token = socket.handshake.headers.cookie
+                ?.split("; ")
+                .find((row) => row.startsWith("jwt="))
+                ?.split("=")[1];
+        }
+
+        if (!token) {
+            throw new AppError("Unauthorized", "Authorization header not found");
+        }
+
+        // Verify JWT
+        let decoded: CustomJwtPayload | null = null;
+        try {
+            decoded = jwt.verify(token, ENV.JWT_SECRET) as CustomJwtPayload;
+        } catch (error) {
+            throw new AppError("Unauthorized", "Invalid/expired token");
+        }
+
+        // Find user
+        if (!decoded?.id) {
+            throw new AppError("Unauthorized", "Invalid/expired token");
+        }
+        const user = await User.findById(decoded.id).select("-password");
+        if (!user) {
+            throw new AppError("Unauthorized", "Invalid/expired token");
+        }
+
+        // attach user info to socket
+        socket.user = user.toJSON() as RequestUser;
+
+        next();
+    } catch (error: any) {
+        next(
+            new AppError("Unauthorized", "Invalid/expired token", {
+                message: error.message,
+            })
+        );
+    }
+};
 /**
  * Restrict access based on user roles.
  * Use after protect() middleware
@@ -80,4 +140,4 @@ async function authorizeRoles(...roles: UserRole[]) {
     };
 }
 
-export { protect, authorizeRoles };
+export { authorizeRoles, protect, protectSocket };
