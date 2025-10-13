@@ -17,11 +17,14 @@ const getUserChats = async (req: Request, res: Response) => {
     }
     // Get all chats for the user
     const chats = await Chat.find({ participants: userId })
-        .populate("participants", "username avatar fullName")
+        .populate("participants", "username avatar firstName lastName isOnline lastSeen")
         .populate({
             path: "lastMessage",
             select: "content sender receiver createdAt",
-            populate: { path: "sender receiver", select: "username avatar fullName" },
+            populate: {
+                path: "sender receiver",
+                select: "username avatar firstName lastName isOnline lastSeen",
+            },
         })
         .sort({ updatedAt: -1 });
 
@@ -51,14 +54,20 @@ const createChat = async (req: Request, res: Response) => {
 
     const participants = [userId, recipientId].sort();
 
+    let statusCode = 200;
+
     let chat = await Chat.findOne({ participants });
     if (!chat) {
+        statusCode = 201;
         chat = await Chat.create({ participants });
     }
 
-    const populated = await chat.populate("participants", "username avatar fullName");
+    const populated = await chat.populate(
+        "participants",
+        "username avatar firstName lastName isOnline lastSeen"
+    );
 
-    sendResponse(res, 201, "Chat created successfully", {
+    sendResponse(res, statusCode, "Chat created successfully", {
         chat: populated,
     });
 };
@@ -86,8 +95,8 @@ const getChatMessages = async (req: Request, res: Response) => {
 
     const messages = await Message.find({ chat: chatId })
         .sort({ createdAt: 1 })
-        .populate("sender", "username avatar fullName")
-        .populate("receiver", "username avatar fullName");
+        .populate("sender", "username avatar fullName isOnline lastSeen")
+        .populate("receiver", "username avatar fullName isOnline lastSeen");
 
     sendResponse(res, 200, "Messages fetched successfully", {
         messages,
@@ -135,8 +144,8 @@ const sendMessage = async (req: Request, res: Response) => {
     await chat.save();
 
     const populated = await message.populate([
-        { path: "sender", select: "username avatar fullName" },
-        { path: "receiver", select: "username avatar fullName" },
+        { path: "sender", select: "username avatar fullName isOnline lastSeen" },
+        { path: "receiver", select: "username avatar fullName isOnline lastSeen" },
     ]);
 
     sendResponse(res, 201, "Message sent successfully", {

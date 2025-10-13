@@ -32,7 +32,7 @@ app.use(favicon(path.join(process.cwd(), "public", "favicon.ico")));
  * - `contentSecurityPolicy`: configure CSP (can be disabled if using inline scripts)
  * - `crossOriginEmbedderPolicy`: useful for media-heavy apps
  */
-app.use(helmet());
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
 /* -----------------------------------------------------------
  * ⚙️  Core Middleware
@@ -87,7 +87,7 @@ app.use(httpLogger);
  * Serve static files (e.g., uploaded images)
  * Files are accessible under `/uploads` route
  */
-app.use("/uploads", express.static(path.join(process.cwd(), "public/uploads")));
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 /**
  * Protect routes with ArcJet

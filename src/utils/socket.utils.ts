@@ -25,15 +25,15 @@ function getReceiverSocketId(userId: string) {
  */
 async function handleDisconnect(io: Server, user: RequestUser, userId: string): Promise<void> {
     // Log the disconnection
-    logger.info(`A user disconnected: ${user.username}`);
+    logger.info(`User disconnected:[${user.username}]`);
     // remove the user from the map
-    delete userSocketMap[userId];
+    // delete userSocketMap[userId];
     // Update the user isOnline and lastSeen
     user.isOnline = false;
     user.lastSeen = new Date();
     await user.save();
     // emit the event to all connected clients
-    io.emit("getOnlineUsers", Object.keys(userSocketMap));
+    // io.emit("getOnlineUsers", Object.keys(userSocketMap));
 }
 
 /**
@@ -49,16 +49,16 @@ async function handleSocketConnection(io: Server, socket: Socket): Promise<void>
     const userId = user.id;
 
     // Log the connection
-    logger.info(`A user connected: ${user.username}`);
+    logger.info(`User Connected:[${user.username}]`);
     // Store the socket id and user id in a map
-    userSocketMap[userId] = socket.id;
+    // userSocketMap[userId] = socket.id;
 
     // Get the user and update isOnline to true
     user.isOnline = true;
     await user.save();
 
     // io.emit() is used to send events to all connected clients
-    io.emit("getOnlineUsers", Object.keys(userSocketMap));
+    // io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
     // with socket.on we listen for events from clients
     socket.on("disconnect", () => {
