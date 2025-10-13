@@ -64,21 +64,8 @@ async function protect(req: Request, res: Response, next: NextFunction): Promise
  */
 const protectSocket = async (socket: Socket, next: (err?: ExtendedError) => void) => {
     try {
-        // Try extracting from Authorization header
-        const authHeader = socket.handshake.headers.authorization;
-        let token: string | undefined;
-
-        if (authHeader?.startsWith("Bearer ")) {
-            token = authHeader.split(" ")[1];
-        }
-
-        // (Optional fallback) Try extracting from cookies if needed
-        if (!token) {
-            token = socket.handshake.headers.cookie
-                ?.split("; ")
-                .find((row) => row.startsWith("jwt="))
-                ?.split("=")[1];
-        }
+        // Try extracting from the handshake auth
+        let token: string | undefined = socket.handshake.auth?.token;
 
         if (!token) {
             throw new AppError("Unauthorized", "Authorization header not found");
@@ -89,16 +76,16 @@ const protectSocket = async (socket: Socket, next: (err?: ExtendedError) => void
         try {
             decoded = jwt.verify(token, ENV.JWT_SECRET) as CustomJwtPayload;
         } catch (error) {
-            throw new AppError("Unauthorized", "Invalid/expired token");
+            throw new AppError("Unauthorized", "Invalid/expired token 00000000000");
         }
 
         // Find user
         if (!decoded?.id) {
-            throw new AppError("Unauthorized", "Invalid/expired token");
+            throw new AppError("Unauthorized", "Invalid/expired token 111111111111");
         }
         const user = await User.findById(decoded.id).select("-password");
         if (!user) {
-            throw new AppError("Unauthorized", "Invalid/expired token");
+            throw new AppError("Unauthorized", "Invalid/expired token 2222222222222");
         }
 
         // attach user info to socket
@@ -107,7 +94,7 @@ const protectSocket = async (socket: Socket, next: (err?: ExtendedError) => void
         next();
     } catch (error: any) {
         next(
-            new AppError("Unauthorized", "Invalid/expired token", {
+            new AppError("Unauthorized", "Invalid/expired token 3333333333333333333333", {
                 message: error.message,
             })
         );
