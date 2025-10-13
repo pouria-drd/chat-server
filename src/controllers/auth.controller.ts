@@ -51,9 +51,9 @@ export const login = async (req: Request, res: Response) => {
         $or: [{ username: identifier }, { email: identifier }],
     }).select("+password");
     // Check if user exists and password matches
-    if (!user) throw new AppError("BadRequest", "Invalid credentialssssssssssss");
+    if (!user) throw new AppError("BadRequest", "Invalid credentials");
     const isMatch = await user.comparePassword(password);
-    if (!isMatch) throw new AppError("BadRequest", "Invalid credentialswwwwwwwwww");
+    if (!isMatch) throw new AppError("BadRequest", "Invalid credentials");
 
     // Check if user can login
     if (user.status === "banned") {
