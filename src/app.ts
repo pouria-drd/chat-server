@@ -47,7 +47,12 @@ app.use(helmet());
  * - `credentials`: enable cookies/auth headers (true/false)
  * - `methods`: allowed HTTP methods (default: GET,HEAD,PUT,PATCH,POST,DELETE)
  */
-app.use(cors());
+app.use(
+    cors({
+        origin: ENV.CORS_ORIGIN,
+        credentials: true,
+    })
+);
 
 /**
  * Parse JSON request bodies
