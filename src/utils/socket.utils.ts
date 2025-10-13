@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
 
-import { User } from "@/types";
+import { RequestUser } from "@/types";
 import logger from "@/configs/logger.config";
 
 /**
@@ -23,11 +23,15 @@ function getReceiverSocketId(userId: string) {
  * @param user the user object
  * @param userId the user id
  */
-function handleDisconnect(io: Server, user: User, userId: string) {
+async function handleDisconnect(io: Server, user: RequestUser, userId: string): Promise<void> {
     // Log the disconnection
     logger.info(`A user disconnected: ${user.username}`);
     // remove the user from the map
     delete userSocketMap[userId];
+    // Update the user isOnline and lastSeen
+    user.isOnline = false;
+    user.lastSeen = new Date();
+    await user.save();
     // emit the event to all connected clients
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
 }
@@ -37,7 +41,7 @@ function handleDisconnect(io: Server, user: User, userId: string) {
  * @param io Socket.IO server
  * @param socket Socket.IO socket
  */
-function handleSocketConnection(io: Server, socket: Socket) {
+async function handleSocketConnection(io: Server, socket: Socket): Promise<void> {
     // Check if the user is authenticated
     if (!socket.user) return;
     // Get the user from the socket
@@ -48,6 +52,10 @@ function handleSocketConnection(io: Server, socket: Socket) {
     logger.info(`A user connected: ${user.username}`);
     // Store the socket id and user id in a map
     userSocketMap[userId] = socket.id;
+
+    // Get the user and update isOnline to true
+    user.isOnline = true;
+    await user.save();
 
     // io.emit() is used to send events to all connected clients
     io.emit("getOnlineUsers", Object.keys(userSocketMap));

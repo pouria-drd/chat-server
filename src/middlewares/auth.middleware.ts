@@ -8,7 +8,7 @@ import { Request, Response, NextFunction } from "express";
 import ENV from "@/configs/env.config";
 import User from "@/models/user.model";
 import { AppError } from "@/errors/app.error";
-import { CustomJwtPayload, RequestUser, UserRole } from "@/types";
+import { CustomJwtPayload, UserRole } from "@/types";
 
 /**
  * Middleware for authentication and optional role authorization
@@ -49,7 +49,7 @@ async function protect(req: Request, res: Response, next: NextFunction): Promise
         }
 
         // Attach user to request
-        req.user = user.toJSON() as RequestUser;
+        req.user = user;
 
         next();
     } catch (error) {
@@ -102,7 +102,7 @@ const protectSocket = async (socket: Socket, next: (err?: ExtendedError) => void
         }
 
         // attach user info to socket
-        socket.user = user.toJSON() as RequestUser;
+        socket.user = user;
 
         next();
     } catch (error: any) {

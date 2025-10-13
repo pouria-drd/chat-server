@@ -1,12 +1,7 @@
-import http from "http";
-import app from "./app";
 import ENV from "@/configs/env.config";
 import connectDB from "@/configs/db.config";
 import logger from "@/configs/logger.config";
-import setupSocket from "@/configs/socket.config";
-
-// Create the HTTP server (used for both Express + Socket.IO)
-const server = http.createServer(app);
+import { server } from "@/configs/socket.config";
 
 /**
  * Start the server and listen for incoming connections
@@ -16,11 +11,8 @@ const startServer = async () => {
         // Connect to MongoDB first
         await connectDB();
 
-        // Setup Socket.IO
-        setupSocket(server);
-
         // Start the server only after successful DB connection
-        server.listen(ENV.PORT, () => {
+        server.listen(ENV.PORT, async () => {
             logger.info(`✅ Server running at: http://localhost:${ENV.PORT} (${ENV.NODE_ENV})`);
         });
     } catch (error) {
