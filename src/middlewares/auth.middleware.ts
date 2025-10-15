@@ -18,43 +18,50 @@ import { CustomJwtPayload, UserRole } from "@/types";
  *  - protect("admin") → only admin users
  *  - protect("admin", "moderator") → admin or moderator users
  */
-async function protect(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-        // extract token from request headers
-        let token: string | undefined;
+async function protect(
+	req: Request,
+	res: Response,
+	next: NextFunction,
+): Promise<void> {
+	try {
+		// extract token from request headers
+		let token: string | undefined;
 
-        if (req.headers.authorization?.startsWith("Bearer ")) {
-            token = req.headers.authorization.split(" ")[1];
-        }
+		if (req.headers.authorization?.startsWith("Bearer ")) {
+			token = req.headers.authorization.split(" ")[1];
+		}
 
-        if (!token) {
-            throw new AppError("Unauthorized", "Authorization header not found");
-        }
+		if (!token) {
+			throw new AppError(
+				"Unauthorized",
+				"Authorization header not found",
+			);
+		}
 
-        // Verify JWT
-        let decoded: CustomJwtPayload | null = null;
-        try {
-            decoded = jwt.verify(token, ENV.JWT_SECRET) as CustomJwtPayload;
-        } catch (error) {
-            throw new AppError("Unauthorized", "Invalid/expired token");
-        }
+		// Verify JWT
+		let decoded: CustomJwtPayload | null = null;
+		try {
+			decoded = jwt.verify(token, ENV.JWT_SECRET) as CustomJwtPayload;
+		} catch (error) {
+			throw new AppError("Unauthorized", "Invalid/expired token");
+		}
 
-        // Find user
-        if (!decoded?.id) {
-            throw new AppError("Unauthorized", "Invalid/expired token");
-        }
-        const user = await User.findById(decoded.id).select("-password");
-        if (!user) {
-            throw new AppError("Unauthorized", "Invalid/expired token");
-        }
+		// Find user
+		if (!decoded?.id) {
+			throw new AppError("Unauthorized", "Invalid/expired token");
+		}
+		const user = await User.findById(decoded.id).select("-password");
+		if (!user) {
+			throw new AppError("Unauthorized", "Invalid/expired token");
+		}
 
-        // Attach user to request
-        req.user = user;
+		// Attach user to request
+		req.user = user;
 
-        next();
-    } catch (error) {
-        next(error);
-    }
+		next();
+	} catch (error) {
+		next(error);
+	}
 }
 
 /**
@@ -62,43 +69,62 @@ async function protect(req: Request, res: Response, next: NextFunction): Promise
  * Checks for a valid JWT token in the http-only cookie
  * and attaches the user info to the socket
  */
-const protectSocket = async (socket: Socket, next: (err?: ExtendedError) => void) => {
-    try {
-        // Try extracting from the handshake auth
-        let token: string | undefined = socket.handshake.auth?.token;
+const protectSocket = async (
+	socket: Socket,
+	next: (err?: ExtendedError) => void,
+) => {
+	try {
+		// Try extracting from the handshake auth
+		let token: string | undefined = socket.handshake.auth?.token;
 
-        if (!token) {
-            throw new AppError("Unauthorized", "Authorization header not found");
-        }
+		if (!token) {
+			throw new AppError(
+				"Unauthorized",
+				"Authorization header not found",
+			);
+		}
 
-        // Verify JWT
-        let decoded: CustomJwtPayload | null = null;
-        try {
-            decoded = jwt.verify(token, ENV.JWT_SECRET) as CustomJwtPayload;
-        } catch (error) {
-            throw new AppError("Unauthorized", "Invalid/expired token 00000000000");
-        }
+		// Verify JWT
+		let decoded: CustomJwtPayload | null = null;
+		try {
+			decoded = jwt.verify(token, ENV.JWT_SECRET) as CustomJwtPayload;
+		} catch (error) {
+			throw new AppError(
+				"Unauthorized",
+				"Invalid/expired token 00000000000",
+			);
+		}
 
-        // Find user
-        if (!decoded?.id) {
-            throw new AppError("Unauthorized", "Invalid/expired token 111111111111");
-        }
-        const user = await User.findById(decoded.id).select("-password");
-        if (!user) {
-            throw new AppError("Unauthorized", "Invalid/expired token 2222222222222");
-        }
+		// Find user
+		if (!decoded?.id) {
+			throw new AppError(
+				"Unauthorized",
+				"Invalid/expired token 111111111111",
+			);
+		}
+		const user = await User.findById(decoded.id).select("-password");
+		if (!user) {
+			throw new AppError(
+				"Unauthorized",
+				"Invalid/expired token 2222222222222",
+			);
+		}
 
-        // attach user info to socket
-        socket.user = user;
+		// attach user info to socket
+		socket.user = user;
 
-        next();
-    } catch (error: any) {
-        next(
-            new AppError("Unauthorized", "Invalid/expired token 3333333333333333333333", {
-                message: error.message,
-            })
-        );
-    }
+		next();
+	} catch (error: any) {
+		next(
+			new AppError(
+				"Unauthorized",
+				"Invalid/expired token 3333333333333333333333",
+				{
+					message: error.message,
+				},
+			),
+		);
+	}
 };
 /**
  * Restrict access based on user roles.
@@ -110,21 +136,24 @@ const protectSocket = async (socket: Socket, next: (err?: ExtendedError) => void
  * }));
  */
 async function authorizeRoles(...roles: UserRole[]) {
-    return (req: Request, res: Response, next: NextFunction) => {
-        try {
-            if (!req.user) {
-                throw new AppError("Unauthorized", "User not authenticated");
-            }
+	return (req: Request, res: Response, next: NextFunction) => {
+		try {
+			if (!req.user) {
+				throw new AppError("Unauthorized", "User not authenticated");
+			}
 
-            if (!roles.includes(req.user.role)) {
-                throw new AppError("Forbidden", "You are not allowed to perform this action");
-            }
+			if (!roles.includes(req.user.role)) {
+				throw new AppError(
+					"Forbidden",
+					"You are not allowed to perform this action",
+				);
+			}
 
-            next();
-        } catch (error) {
-            next(error);
-        }
-    };
+			next();
+		} catch (error) {
+			next(error);
+		}
+	};
 }
 
 export { authorizeRoles, protect, protectSocket };

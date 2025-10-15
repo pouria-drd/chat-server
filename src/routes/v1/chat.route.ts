@@ -2,11 +2,11 @@ import { Router } from "express";
 import { protect } from "@/middlewares/auth.middleware";
 import asyncHandler from "@/middlewares/asyncHandler.middleware";
 import {
-    createChat,
-    getChatMessages,
-    getUserChats,
-    markMessagesAsRead,
-    sendMessage,
+	createChat,
+	getChatMessages,
+	getUserChats,
+	markMessagesAsRead,
+	sendMessage,
 } from "@/controllers/chat.controller";
 
 const chatRouter = Router();

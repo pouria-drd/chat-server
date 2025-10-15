@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
 
 import Chat from "@/models/chat.model";
+import { io } from "@/configs/socket.config";
 import Message from "@/models/message.model";
 import { AppError } from "@/errors/app.error";
 import { sendResponse } from "@/utils/app.utils";
+import { getReceiverSocketId } from "@/utils/socket.utils";
 
 /**
  * Get all Chats for the authenticated user
@@ -130,24 +132,29 @@ const sendMessage = async (req: Request, res: Response) => {
     if (!chat.participants.some((p) => p.toString() === userId.toString())) {
         throw new AppError("Forbidden", "You are not part of this chat");
     }
-
+    // Get the receiver id from the chat participants
     const receiverId = chat.participants.find((p) => p.toString() !== userId.toString())!;
-
+    // Create a new message
     const message = await Message.create({
         chat: chatId,
         sender: userId,
         receiver: receiverId,
         content,
     });
-
+    // Update the chat lastMessage
     chat.lastMessage = message.id;
     await chat.save();
-
+    // Populate the message with sender and receiver data
     const populated = await message.populate([
-        { path: "sender", select: "username avatar fullName isOnline lastSeen" },
-        { path: "receiver", select: "username avatar fullName isOnline lastSeen" },
+        { path: "sender", select: "username avatar firstName lastName isOnline lastSeen" },
+        { path: "receiver", select: "username avatar firstName lastName isOnline lastSeen" },
     ]);
-
+    // Send the message to the receiver via socket
+    const receiverSocketId = getReceiverSocketId(receiverId.toString());
+    if (receiverSocketId) {
+        io.to(receiverSocketId).emit("newMessage", populated);
+    }
+    // Send the response
     sendResponse(res, 201, "Message sent successfully", {
         message: populated,
     });

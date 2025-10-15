@@ -48,10 +48,10 @@ app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
  * - `methods`: allowed HTTP methods (default: GET,HEAD,PUT,PATCH,POST,DELETE)
  */
 app.use(
-    cors({
-        origin: ENV.CORS_ORIGIN,
-        credentials: true,
-    })
+	cors({
+		origin: ENV.CORS_ORIGIN,
+		credentials: true,
+	}),
 );
 
 /**
@@ -109,12 +109,12 @@ app.use("/api", router);
  * Returns basic app info and version.
  */
 app.get("/", (req: Request, res: Response) => {
-    res.json({
-        success: true,
-        name: "Chat Server",
-        version: getAppVersion(),
-        message: "Welcome to the chat server!",
-    });
+	res.json({
+		success: true,
+		name: "Chat Server",
+		version: getAppVersion(),
+		message: "Welcome to the chat server!",
+	});
 });
 
 /* -----------------------------------------------------------

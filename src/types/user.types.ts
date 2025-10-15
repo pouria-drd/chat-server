@@ -62,34 +62,34 @@ export interface IUserDocument extends BaseDocument {
 /**
  * User — Data Transfer Object for returning user data to clients
  */
-// export interface User {
-//     id: string; // string type for frontend usage
+export interface UserDTO {
+    id: string; // string type for frontend usage
 
-//     email: string;
-//     username: string;
-//     fullName: string;
+    email: string;
+    username: string;
+    fullName: string;
 
-//     bio?: string;
-//     avatar?: string;
-//     lastName?: string;
-//     firstName: string;
+    bio?: string;
+    avatar?: string;
+    lastName?: string;
+    firstName: string;
 
-//     isOnline: boolean;
-//     isVerified: boolean;
-//     emailVerified: boolean;
+    isOnline: boolean;
+    isVerified: boolean;
+    emailVerified: boolean;
 
-//     role: UserRole;
-//     gender: UserGender;
-//     status: UserStatus;
+    role: UserRole;
+    gender: UserGender;
+    status: UserStatus;
 
-//     birthDate?: Date;
+    birthDate?: Date;
 
-//     lastSeen?: Date;
-//     lastLogin?: Date;
+    lastSeen?: Date;
+    lastLogin?: Date;
 
-//     updatedAt: Date;
-//     createdAt: Date;
-// }
+    updatedAt: Date;
+    createdAt: Date;
+}
 
 /**
  * UserPayload — structure for JWT payload

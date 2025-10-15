@@ -6,7 +6,7 @@ import packageJson from "../../package.json";
  * @returns The current application version.
  */
 function getAppVersion(): string {
-    return packageJson.version || "0.1.0";
+	return packageJson.version || "0.1.0";
 }
 
 /**
@@ -16,8 +16,13 @@ function getAppVersion(): string {
  * @param message - The success message.
  * @param data - Optional data to be sent with the response.
  */
-function sendResponse(res: Response, status: number, message: string, data = {}) {
-    res.status(status).json({ success: true, message, data });
+function sendResponse(
+	res: Response,
+	status: number,
+	message: string,
+	data = {},
+) {
+	res.status(status).json({ success: true, message, data });
 }
 
 export { getAppVersion, sendResponse };

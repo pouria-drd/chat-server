@@ -2,51 +2,51 @@ import { Schema, model } from "mongoose";
 import { IMessageDocument } from "@/types/message.types";
 
 const messageSchema = new Schema<IMessageDocument>(
-    {
-        chat: {
-            type: Schema.Types.ObjectId,
-            ref: "Chat",
-            required: true,
-        },
+	{
+		chat: {
+			type: Schema.Types.ObjectId,
+			ref: "Chat",
+			required: true,
+		},
 
-        sender: {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-            required: true,
-        },
-        receiver: {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-            required: true,
-        },
+		sender: {
+			type: Schema.Types.ObjectId,
+			ref: "User",
+			required: true,
+		},
+		receiver: {
+			type: Schema.Types.ObjectId,
+			ref: "User",
+			required: true,
+		},
 
-        content: {
-            type: String,
-            trim: true,
-            required: true,
-            maxlength: 2048,
-        },
+		content: {
+			type: String,
+			trim: true,
+			required: true,
+			maxlength: 2048,
+		},
 
-        readBy: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "User",
-            },
-        ],
-    },
-    {
-        timestamps: true,
-        versionKey: false,
-        toJSON: {
-            virtuals: true,
-            versionKey: false,
-            transform(_, ret: Record<string, any>) {
-                ret.id = ret._id?.toString();
-                delete ret._id;
-                return ret;
-            },
-        },
-    }
+		readBy: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: "User",
+			},
+		],
+	},
+	{
+		timestamps: true,
+		versionKey: false,
+		toJSON: {
+			virtuals: true,
+			versionKey: false,
+			transform(_, ret: Record<string, any>) {
+				ret.id = ret._id?.toString();
+				delete ret._id;
+				return ret;
+			},
+		},
+	},
 );
 
 // For performance

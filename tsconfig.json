@@ -1,20 +1,20 @@
 {
-    "compilerOptions": {
-        "target": "ES2021",
-        "module": "commonjs",
-        "rootDir": "src",
-        "outDir": "dist",
-        "paths": {
-            "@/*": ["./src/*"]
-        },
-        "types": ["node", "express", "socket.io"],
-        "typeRoots": ["./node_modules/@types", "./src/types"],
-        "strict": true,
-        "skipLibCheck": true,
-        "esModuleInterop": true,
-        "resolveJsonModule": true,
-        "forceConsistentCasingInFileNames": true
-    },
-    "include": ["src/**/*", "src/types/**/*"],
-    "exclude": ["node_modules"]
+	"compilerOptions": {
+		"target": "ES2021",
+		"module": "commonjs",
+		"rootDir": "src",
+		"outDir": "dist",
+		"paths": {
+			"@/*": ["./src/*"]
+		},
+		"types": ["node", "express", "socket.io"],
+		"typeRoots": ["./node_modules/@types", "./src/types"],
+		"strict": true,
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"resolveJsonModule": true,
+		"forceConsistentCasingInFileNames": true
+	},
+	"include": ["src/**/*", "src/types/**/*"],
+	"exclude": ["node_modules"]
 }

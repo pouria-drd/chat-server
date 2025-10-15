@@ -20,11 +20,13 @@ import { Request, Response, NextFunction } from "express";
  *     res.json(user);
  * }));
  */
-const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<any>) => {
-    return (req: Request, res: Response, next: NextFunction) => {
-        // Execute the async function and catch any errors automatically
-        Promise.resolve(fn(req, res, next)).catch(next);
-    };
+const asyncHandler = (
+	fn: (req: Request, res: Response, next: NextFunction) => Promise<any>,
+) => {
+	return (req: Request, res: Response, next: NextFunction) => {
+		// Execute the async function and catch any errors automatically
+		Promise.resolve(fn(req, res, next)).catch(next);
+	};
 };
 
 export default asyncHandler;

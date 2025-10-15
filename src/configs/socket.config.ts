@@ -10,10 +10,10 @@ import { handleSocketConnection } from "@/utils/socket.utils";
 const server = http.createServer(app);
 // Create a new Socket.IO server
 const io = new Server(server, {
-    cors: {
-        origin: ENV.CORS_ORIGIN,
-        credentials: true,
-    },
+	cors: {
+		origin: ENV.CORS_ORIGIN,
+		credentials: true,
+	},
 });
 
 // Apply authentication middleware to all socket connections
@@ -21,7 +21,7 @@ io.use(protectSocket);
 
 // Handle socket connection
 io.on("connection", (socket) => {
-    handleSocketConnection(io, socket);
+	handleSocketConnection(io, socket);
 });
 
 export { io, server };
