@@ -13,8 +13,7 @@ const skip = () => {
 
 // Define custom log format similar to Django
 // Example Output: 127.0.0.1 - GET /api/users 200 12ms
-const format =
-	"| :remote-addr | :method | :url | :status | :response-time ms |";
+const format = ":method | :url | :status | :response-time ms | :remote-addr";
 
 // Create and export the middleware
 const httpLogger = morgan(format, { stream, skip });

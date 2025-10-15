@@ -2,7 +2,7 @@ import { createLogger, format, transports, addColors } from "winston";
 
 const { combine, timestamp, printf, colorize } = format;
 
-// Define custom colors for levels
+// Custom log levels and colors
 const customLevels = {
 	levels: {
 		error: 0,
@@ -15,33 +15,85 @@ const customLevels = {
 		error: "red",
 		warn: "yellow",
 		info: "green",
-		http: "cyan", //blue
+		http: "cyan",
 		debug: "magenta",
 	},
 };
 
 addColors(customLevels.colors);
 
+// Custom filter to allow only a specific level
+const filterOnly = (level: string) =>
+	format((info) => (info.level === level ? info : false))();
+
+// Log format
 const logFormat = printf(({ level, message, timestamp }) => {
 	return `${timestamp} [${level}] ${message}`;
 });
 
 const logger = createLogger({
 	levels: customLevels.levels,
-	level: "http", // log all levels above http
-	format: combine(
-		colorize(),
-		timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-		logFormat,
-	),
+	level: "debug", // lowest level, so all logs are processed
 	transports: [
-		new transports.Console(),
-		new transports.File({ filename: "logs/error.log", level: "error" }),
-		new transports.File({ filename: "logs/info.log", level: "info" }),
-		new transports.File({ filename: "logs/http.log", level: "http" }),
-		new transports.File({ filename: "logs/debug.log", level: "debug" }),
-		new transports.File({ filename: "logs/warn.log", level: "warn" }),
-		new transports.File({ filename: "logs/combined.log" }),
+		// Console: colorize only level
+		new transports.Console({
+			format: combine(
+				timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+				colorize({ all: false }), // only level is colorized
+				logFormat,
+			),
+		}),
+
+		// File transports: one file per level
+		new transports.File({
+			filename: "logs/error.log",
+			format: combine(
+				filterOnly("error"),
+				timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+				logFormat,
+			),
+		}),
+		new transports.File({
+			filename: "logs/warn.log",
+			format: combine(
+				filterOnly("warn"),
+				timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+				logFormat,
+			),
+		}),
+		new transports.File({
+			filename: "logs/info.log",
+			format: combine(
+				filterOnly("info"),
+				timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+				logFormat,
+			),
+		}),
+		new transports.File({
+			filename: "logs/http.log",
+			format: combine(
+				filterOnly("http"),
+				timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+				logFormat,
+			),
+		}),
+		new transports.File({
+			filename: "logs/debug.log",
+			format: combine(
+				filterOnly("debug"),
+				timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+				logFormat,
+			),
+		}),
+
+		// Combined log: all levels
+		new transports.File({
+			filename: "logs/combined.log",
+			format: combine(
+				timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+				logFormat,
+			),
+		}),
 	],
 });
 
