@@ -1,6 +1,7 @@
 import User from "@/models/user.model";
-import { IUserDocument } from "@/types";
+import toUserDTO from "@/dtos/user.dto";
 import { AppError } from "@/errors/app.error";
+import { IUserDocument, UserDTO } from "@/types";
 import { handleUserConflict, userExists } from "@/utils/user.utils";
 
 // ============================================================================
@@ -15,6 +16,7 @@ interface CreateUserData {
 	lastName?: string;
 	gender?: string;
 	birthDate?: string;
+	[key: string]: any; // allow additional optional fields
 }
 
 /**
@@ -37,6 +39,7 @@ async function createUser(data: CreateUserData): Promise<IUserDocument> {
 	const _birthDate = data.birthDate ? new Date(data.birthDate) : undefined;
 
 	const user = await User.create({
+		...data,
 		username: data.username.trim().toLowerCase(),
 		email: data.email.trim().toLowerCase(),
 		password: data.password,
@@ -63,7 +66,7 @@ interface LoginUserData {
  */
 async function loginUser(
 	data: LoginUserData,
-): Promise<{ user: IUserDocument; token: string }> {
+): Promise<{ user: UserDTO; token: string }> {
 	// Get full user document (with password) using the utility
 	const result = await userExists({ identifier: data.identifier }, true);
 
@@ -89,10 +92,11 @@ async function loginUser(
 	}
 
 	await user.updateLastLogin();
-
+	const token = user.generateAuthToken();
+	const userDTO = toUserDTO(user);
 	return {
-		user,
-		token: user.generateAuthToken(),
+		token,
+		user: userDTO,
 	};
 }
 

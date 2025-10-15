@@ -27,10 +27,9 @@ export const login = async (req: Request, res: Response) => {
 	// Authenticate user via service
 	const { user, token } = await loginUser(req.body);
 	// Return user dto and token
-	const userDTO = toUserDTO(user);
 	return res.json({
 		success: true,
 		message: "Login successful",
-		data: { token, user: userDTO },
+		data: { token, user },
 	});
 };
