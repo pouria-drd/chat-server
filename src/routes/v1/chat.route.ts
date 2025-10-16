@@ -26,21 +26,21 @@ chatRouter.get("/", asyncHandler(getUserChats));
 chatRouter.post("/", asyncHandler(createChat)); // body: { recipientId: string }
 
 /**
- * @route GET /api/v1/chats/:chadId
+ * @route GET /api/v1/chats/:chatId
  * @desc Get messages for a specific chat
  */
-chatRouter.get("/:chadId/messages", asyncHandler(getChatMessages));
+chatRouter.get("/:chatId/messages", asyncHandler(getChatMessages));
 
 /**
- * @route POST /api/v1/chats/:chadId/messages
+ * @route POST /api/v1/chats/:chatId/messages
  * @desc Send a message within a chat
  */
-chatRouter.post("/:chadId/messages", asyncHandler(sendMessage)); // body: { content: string }
+chatRouter.post("/:chatId/messages", asyncHandler(sendMessage)); // body: { content: string }
 
 /**
- * @route POST /api/v1/chats/:chadId/read
+ * @route POST /api/v1/chats/:chatId/read
  * @desc Mark messages in a chat as read by the current user
  */
-chatRouter.post("/:chadId/read", asyncHandler(markMessagesAsRead));
+chatRouter.post("/:chatId/read", asyncHandler(markMessagesAsRead));
 
 export default chatRouter;

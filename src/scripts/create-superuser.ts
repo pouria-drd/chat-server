@@ -2,7 +2,6 @@ import readline from "readline";
 import User from "@/models/user.model";
 import connectDB from "@/configs/db.config";
 import { UserGender } from "@/types/user.types";
-import { createUser } from "@/services/auth.service";
 
 /**
  * Parse CLI args like:
@@ -129,7 +128,7 @@ async function createSuperUser() {
 		process.exit(1);
 	}
 
-	const user = await createUser({
+	const user = await User.create({
 		email,
 		username,
 		password,

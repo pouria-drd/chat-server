@@ -26,13 +26,6 @@ const messageSchema = new Schema<IMessageDocument>(
 			required: true,
 			maxlength: 2048,
 		},
-
-		readBy: [
-			{
-				type: Schema.Types.ObjectId,
-				ref: "User",
-			},
-		],
 	},
 	{
 		timestamps: true,

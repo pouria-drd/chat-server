@@ -8,8 +8,6 @@ export interface IMessageDocument extends BaseDocument {
 	receiver: Types.ObjectId;
 
 	content: string;
-
-	readBy: Types.ObjectId[];
 }
 
 export interface Message {
@@ -21,7 +19,6 @@ export interface Message {
 
 	content: string;
 
-	readAt: Date;
 	updatedAt: Date;
 	createdAt: Date;
 }
