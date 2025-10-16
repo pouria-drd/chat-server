@@ -9,7 +9,7 @@ async function errorMiddleware(
 	next: NextFunction,
 ) {
 	if (isAppError(error)) {
-		logger.error(error);
+		// logger.error(error);
 		return res.status(error.statusCode).json(error.toJSON());
 	}
 	// Handle unknown errors

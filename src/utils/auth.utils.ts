@@ -1,19 +1,11 @@
 import User from "@/models/user.model";
 import toUserDTO from "@/dtos/user.dto";
-import { IUserDocument, UserDTO } from "@/types";
-
-/**
- * Input structure for user existence check.
- */
-interface UserExistsQuery {
-	username?: string;
-	email?: string;
-	identifier?: string;
-}
-
-type UserExistsResponse =
-	| { exists: false; user: null }
-	| { exists: true; user: UserDTO; fullUser?: IUserDocument };
+import {
+	ConflictResponse,
+	UserDTO,
+	UserExistsQuery,
+	UserExistsResponse,
+} from "@/types";
 
 /**
  * Check if a user exists by email, username, or identifier.
@@ -43,15 +35,6 @@ async function userExists(
 	return includeFull
 		? { exists: true, user: userDTO, fullUser: userDoc }
 		: { exists: true, user: userDTO };
-}
-
-/**
- * Response structure for conflicts during registration.
- */
-export interface ConflictResponse {
-	email?: string;
-	username?: string;
-	errorMessage: string;
 }
 
 /**
