@@ -37,7 +37,7 @@ async function handleDisconnect(
 	user.lastSeen = new Date();
 	await user.save();
 	// emit the event to all connected clients
-	// io.emit("getOnlineUsers", Object.keys(userSocketMap));
+	io.emit("userOffline", userId);
 }
 
 /**
@@ -64,8 +64,8 @@ async function handleSocketConnection(
 	user.isOnline = true;
 	await user.save();
 
-	// io.emit() is used to send events to all connected clients
-	// io.emit("getOnlineUsers", Object.keys(userSocketMap));
+	// emit the event to all connected clients
+	io.emit("userOnline", userId);
 
 	// with socket.on we listen for events from clients
 	socket.on("disconnect", () => {

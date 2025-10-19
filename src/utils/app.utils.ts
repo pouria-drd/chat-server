@@ -25,4 +25,24 @@ function sendResponse(
 	res.status(status).json({ success: true, message, data });
 }
 
-export { getAppVersion, sendResponse };
+/**
+ * Extract a cookie value from a cookie header.
+ * @param cookieHeader - The cookie header string.
+ * @param name - The name of the cookie to extract.
+ * @returns The value of the cookie, or null if not found.
+ */
+function getCookieValue(
+	cookieHeader: string | undefined,
+	name: string,
+): string | null {
+	if (!cookieHeader) return null;
+
+	const cookies = cookieHeader.split(";").map((c) => c.trim());
+	for (const cookie of cookies) {
+		const [key, value] = cookie.split("=");
+		if (key === name) return value;
+	}
+	return null;
+}
+
+export { getCookieValue, getAppVersion, sendResponse };

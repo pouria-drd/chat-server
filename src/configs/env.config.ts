@@ -30,6 +30,7 @@ const ENV = {
 	CORS_ORIGIN: corsOrigin || "*",
 
 	// JWT
+	TOKEN_NAME: process.env.TOKEN_NAME || "session",
 	JWT_SECRET: process.env.JWT_SECRET || "secret",
 	JWT_EXPIRES_IN: (process.env.JWT_EXPIRES_IN as StringValue) || "1d",
 

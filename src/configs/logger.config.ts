@@ -33,9 +33,9 @@ const logFormat = printf(({ level, message, timestamp }) => {
 
 const logger = createLogger({
 	levels: customLevels.levels,
-	level: "debug", // lowest level, so all logs are processed
+	level: "debug", // minimum level to log
 	transports: [
-		// Console: colorize only level
+		// Console: colorize only the level
 		new transports.Console({
 			format: combine(
 				timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
@@ -44,47 +44,18 @@ const logger = createLogger({
 			),
 		}),
 
-		// File transports: one file per level
-		new transports.File({
-			filename: "logs/error.log",
-			format: combine(
-				filterOnly("error"),
-				timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-				logFormat,
-			),
-		}),
-		new transports.File({
-			filename: "logs/warn.log",
-			format: combine(
-				filterOnly("warn"),
-				timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-				logFormat,
-			),
-		}),
-		new transports.File({
-			filename: "logs/info.log",
-			format: combine(
-				filterOnly("info"),
-				timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-				logFormat,
-			),
-		}),
-		new transports.File({
-			filename: "logs/http.log",
-			format: combine(
-				filterOnly("http"),
-				timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-				logFormat,
-			),
-		}),
-		new transports.File({
-			filename: "logs/debug.log",
-			format: combine(
-				filterOnly("debug"),
-				timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-				logFormat,
-			),
-		}),
+		// File transports for each level
+		...Object.keys(customLevels.levels).map(
+			(level) =>
+				new transports.File({
+					filename: `logs/${level}.log`,
+					format: combine(
+						filterOnly(level),
+						timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+						logFormat,
+					),
+				}),
+		),
 
 		// Combined log: all levels
 		new transports.File({

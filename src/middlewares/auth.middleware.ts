@@ -8,6 +8,7 @@ import { Request, Response, NextFunction } from "express";
 import ENV from "@/configs/env.config";
 import User from "@/models/user.model";
 import { AppError } from "@/errors/app.error";
+import { getCookieValue } from "@/utils/app.utils";
 import { CustomJwtPayload, UserRole } from "@/types";
 
 /**
@@ -74,8 +75,13 @@ const protectSocket = async (
 	next: (err?: ExtendedError) => void,
 ) => {
 	try {
-		// Try extracting from the handshake auth
-		let token: string | undefined = socket.handshake.auth?.token;
+		// Extract cookie header
+		const cookieHeader = socket.request.headers.cookie;
+		if (!cookieHeader) {
+			throw new AppError("Unauthorized", "No cookies found");
+		}
+
+		const token = getCookieValue(cookieHeader, ENV.TOKEN_NAME);
 
 		if (!token) {
 			throw new AppError(
@@ -89,25 +95,16 @@ const protectSocket = async (
 		try {
 			decoded = jwt.verify(token, ENV.JWT_SECRET) as CustomJwtPayload;
 		} catch (error) {
-			throw new AppError(
-				"Unauthorized",
-				"Invalid/expired token 00000000000",
-			);
+			throw new AppError("Unauthorized", "Invalid/expired token");
 		}
 
 		// Find user
 		if (!decoded?.id) {
-			throw new AppError(
-				"Unauthorized",
-				"Invalid/expired token 111111111111",
-			);
+			throw new AppError("Unauthorized", "Invalid/expired token");
 		}
 		const user = await User.findById(decoded.id).select("-password");
 		if (!user) {
-			throw new AppError(
-				"Unauthorized",
-				"Invalid/expired token 2222222222222",
-			);
+			throw new AppError("Unauthorized", "Invalid/expired token");
 		}
 
 		// attach user info to socket
@@ -116,13 +113,9 @@ const protectSocket = async (
 		next();
 	} catch (error: any) {
 		next(
-			new AppError(
-				"Unauthorized",
-				"Invalid/expired token 3333333333333333333333",
-				{
-					message: error.message,
-				},
-			),
+			new AppError("Unauthorized", "Invalid/expired token", {
+				message: error.message,
+			}),
 		);
 	}
 };
